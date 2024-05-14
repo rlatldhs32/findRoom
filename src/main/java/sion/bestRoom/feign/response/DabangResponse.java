@@ -20,5 +20,8 @@ public class DabangResponse {
 //    private Object map_list_banner;
 //    private Object total;
 
+    private Boolean has_more;
+    private Long page;
+
     private List<DabangRoomDTO> rooms;
 }

@@ -1,5 +1,5 @@
 server:
-  port: 1235
+  port: 8989
 
 spring:
   datasource:
@@ -16,3 +16,10 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
