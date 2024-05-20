@@ -18,4 +18,8 @@ public class ShowDabang {
     private String redirectUrl;
     private Double size;
 
+
+    private Double x;
+    private Double y;
+
 }

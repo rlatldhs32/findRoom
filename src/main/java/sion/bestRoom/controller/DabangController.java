@@ -24,7 +24,7 @@ public class DabangController {
 
     @GetMapping("/dabang")
     public String getDabangRooms() throws InterruptedException {
-        List<DabangRoomDTO> dabangRooms = dabangService.getDabangRooms();
+        List<DabangRoomDTO> dabangRooms = dabangService.getDabangRooms(); //걸어놓은 모든 곳을 다방에서 가져옴.
         return "index";
 //        return dabangRooms;
     }
@@ -47,6 +47,7 @@ public class DabangController {
 
 
 
+
     private List<ShowDabang> convertToShowDabang(List<OneRoom> dabangRooms) {
         List<ShowDabang> showDabangs = new ArrayList<>();
         for (OneRoom dabangRoom : dabangRooms) {
@@ -57,6 +58,8 @@ public class DabangController {
             showDabang.setSize(dabangRoom.getSize());
             showDabang.setImageUrl(dabangRoom.getImg_url());
             showDabang.setRedirectUrl(redirectUrl);
+            showDabang.setX(dabangRoom.getX());
+            showDabang.setY(dabangRoom.getY());
             showDabangs.add(showDabang);
         }
         return showDabangs;

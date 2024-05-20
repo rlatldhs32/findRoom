@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.feign.DabangFeignClient;
+import sion.bestRoom.feign.dto.CityDTO;
+import sion.bestRoom.feign.response.DabangCityResponse;
 import sion.bestRoom.feign.response.DabangResponse;
+import sion.bestRoom.model.City;
 import sion.bestRoom.model.OneRoom;
+import sion.bestRoom.repository.CityRepository;
 import sion.bestRoom.repository.OneRoomRepository;
 import sion.bestRoom.util.Constants;
 
@@ -22,6 +26,7 @@ public class DabangService {
 
     private final DabangFeignClient dabangFeignClient;
     private final OneRoomRepository oneRoomRepository;
+    private final CityRepository cityRepository;
 
     public List<OneRoom> getTop10CostEffectivenessRooms() {
         //모든 DabangRoom에서, total
@@ -59,24 +64,52 @@ public class DabangService {
     public List<DabangRoomDTO> getDabangRooms() throws InterruptedException {
 
         Long cnt = 1L ;
+        //지역을 파람으로 받아야함. TODO.
         while(cnt<100L) {
-            DabangResponse sungnamEstate = dabangFeignClient.getSungNamEstate(cnt);
-
+            DabangResponse sungnamEstate = dabangFeignClient.getSungNamEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
             List<DabangRoomDTO> rooms = sungnamEstate.getRooms();
             log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertToOneRoom(rooms);
+            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
 
             oneRoomRepository.saveAll(roomList);
 
-            log.info("estateTest : {}", sungnamEstate);
             cnt++;
             if(!sungnamEstate.getHas_more())
                 break;
         }
-        return dabangFeignClient.getEstateTest().getRooms();
+
+        cnt = 1L;
+        while(cnt<100L) {
+            DabangResponse eonTongEstate = dabangFeignClient.getEongTongEstate(cnt);
+            List<DabangRoomDTO> rooms = eonTongEstate.getRooms();
+            log.info("rooms : {}", rooms.size());
+            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
+
+            oneRoomRepository.saveAll(roomList);
+
+            cnt++;
+            if(!eonTongEstate.getHas_more())
+                break;
+        }
+
+        cnt = 1L;
+
+        while(cnt<100L) {
+            DabangResponse meTanEstate = dabangFeignClient.getMatanEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
+            List<DabangRoomDTO> rooms = meTanEstate.getRooms();
+            log.info("rooms : {}", rooms.size());
+            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
+
+            oneRoomRepository.saveAll(roomList);
+
+            cnt++;
+            if(!meTanEstate.getHas_more())
+                break;
+        }
+        return null;
     }
 
-    private List<OneRoom> convertToOneRoom(List<DabangRoomDTO> rooms) throws InterruptedException {
+    private List<OneRoom> convertToOneRoom(List<DabangRoomDTO> rooms,String code) throws InterruptedException {
 
         //convert DabangRoomDTO to OneRoomList
         List<OneRoom> oneRoomList = new ArrayList<>();
@@ -99,12 +132,12 @@ public class DabangService {
             Double sizeDouble = Double.parseDouble(size.substring(0, size.length() - 2));
 
             //소수점 이하 버림
-            log.info("maintenance_fee : {}", maintenance_fee);
             if(maintenance_fee.contains("."))
                 maintenance_fee = maintenance_fee.substring(0, maintenance_fee.indexOf("."));
 
             Long maintenance_feeLong = 0L;
             try{
+                log.info("maintenance_fee_ParseToLong : {}", maintenance_fee);
                 maintenance_feeLong = Long.parseLong(maintenance_fee);
             }
             catch (NumberFormatException e)
@@ -116,10 +149,8 @@ public class DabangService {
             String price_title = room.getPrice_title();
             Long deposit = 0L;
             Long monthly_rent = 0L;
-            log.info("price_title : {}", price_title);
             if(price_title.contains("/"))
             {
-                log.info("price_title !! : {}", price_title);
                 String[] split1 = price_title.split("/");
                 //'억'이 들어가 있을 경우 그 앞에 숫자를 10000 곱해주고 그 뒤에를 더함.
                 if(price_title.contains("억")) {
@@ -172,11 +203,117 @@ public class DabangService {
                     .monthly_rent(monthly_rent)
                     .img_url(room.getImg_url())
                     .total_price((deposit * Constants.ConvertPercent) / 12 + monthly_rent)
+                    .x(room.getLocation().get(0)) //경도  x : 경도 :
+                    .y(room.getLocation().get(1)) //위도  y : 위도 : latitude
+                    .code(code)
                     .build();
             oneRoomList.add(oneRoom);
         }
 
         return oneRoomList;
 
+    }
+
+    public List<OneRoom> getAllRooms(Double x1, Double x2, Double y1, Double y2) {
+
+        //x1, x2, y1, y2 사이에 있는 방들을 가져옴.
+        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
+
+        return oneRoomList;
+    }
+
+    public List<OneRoom> getBestTop10Rooms(Double x1, Double x2, Double y1, Double y2) {
+
+        //x1, x2, y1, y2 사이에 있는 방들을 가져옴.
+        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDesc(x1, x2, y1, y2);
+
+        return oneRoomList;
+    }
+
+    public List<City> getSeoulAreaCode() {
+        DabangCityResponse seoulCity = dabangFeignClient.getSeoulCity();
+        //저장함.
+        List<CityDTO> regions = seoulCity.getRegions();
+        //City Model에 저장함.
+
+        List<City> cityList = new ArrayList<>();
+
+        for (CityDTO region : regions) {
+            City city = City.builder()
+                    .code(region.getCode())
+                    .name(region.getName())
+                    .x(region.getLocation().get(0))
+                    .y(region.getLocation().get(1))
+                    .build();
+            cityList.add(city);
+        }
+        cityRepository.saveAll(cityList);
+        return cityList;
+    }
+
+
+    public List<String> getAllRoomsInCity() throws InterruptedException {
+
+        List<City> cities = cityRepository.findAll();
+        List<String> result = new ArrayList<>();
+        //cities의 code에서 뒤 101 부터 300까지 처음부터 돌면서 feginClient에서 오류가 나타날경우에는 다음 city찾음.
+        for (City city : cities) {
+            String code = city.getCode();
+            Long plusCode = 101L; //코드 뒤에 자세히 검색할 애들
+            Long page = 1L;
+            Long roomCnt = 0L;
+            while(plusCode<300L) {
+                boolean goNextCity = false;
+                page = 1L;
+                while(page<100L){
+                    try {
+                        code = city.getCode() + plusCode;
+                        log.info("code : {}", code);
+                        log.info("page : {}", page); //41131102 에서 에러났었음. 확인해봐야할듯.
+                        DabangResponse dabangResponse = dabangFeignClient.getRoomsInCity(code, page);
+                        //page가 1인데도 없을 경우에는 flag 설정해야함.
+                        if(page==1 && dabangResponse.getRooms().isEmpty())
+                        {
+                            goNextCity = true;
+                            break;
+                        }
+
+                        log.info("dabangResponse : {}", dabangResponse.getRooms().size());
+                        List<DabangRoomDTO> rooms = dabangResponse.getRooms();
+                        List<OneRoom> roomList = convertToOneRoom(rooms,code);
+
+                        oneRoomRepository.saveAll(roomList);
+                        roomCnt += rooms.size();
+
+                        if(!dabangResponse.getHas_more() || dabangResponse.getRooms().isEmpty()) //페이지 안넘어가도 된다고 하면
+                            page= 100L;
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("!! error : {}", e.getMessage());
+                        plusCode=300L;
+                        sleep(1000);
+                        break;
+                    }
+                    page++;
+                }
+                if(goNextCity)
+                    break;
+                //여기도 page도 100이면서 저번것도
+                plusCode++;
+
+            }
+            result.add(city.getName() + " : " + roomCnt +" 개의 방");
+        }
+
+        return result;
+    }
+
+    public void deleteAllAreas() {
+        cityRepository.deleteAll();
+    }
+
+    public void deleteAllRooms() {
+        oneRoomRepository.deleteAll();
     }
 }

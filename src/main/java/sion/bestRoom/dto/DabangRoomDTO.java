@@ -3,6 +3,8 @@ package sion.bestRoom.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class DabangRoomDTO {
@@ -13,4 +15,6 @@ public class DabangRoomDTO {
     private String title;
     private String room_desc2; // 방 설명 // 층 , 면적 , 관리비가 있음 현재 ex ) 16.52m², 관리비 7만"
     private String img_url;
+
+    private List<Double> location;
 }
