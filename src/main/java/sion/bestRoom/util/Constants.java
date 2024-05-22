@@ -6,5 +6,6 @@ public class Constants {
 
     public static Boolean checkRoomList = false;
     public static Boolean checkSeoulAreaList = false;
+    public static Boolean checkSubwayList = false;
 
 }

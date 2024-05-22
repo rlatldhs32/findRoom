@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sion.bestRoom.model.City;
 import sion.bestRoom.model.OneRoom;
 import sion.bestRoom.service.DabangService;
@@ -81,10 +78,6 @@ public class AllRoomController {
         List<String> allRoomsInCity = dabangService.getAllRoomsInCity();
         return allRoomsInCity;
     }
-
-
-    //구마다 제일 가성비 좋은 방들을 가져옴.
-    //code로 저장을 해놓자.
 
 
 
