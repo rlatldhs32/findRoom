@@ -49,6 +49,17 @@ dependencies {
 //	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2' // swagger
 //	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2' //swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	//csv읽기
+	implementation 'com.opencsv:opencsv:5.5.1'
+
+
+	//jackson 라이브러리
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.13.3'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.3'
+
 }
 
 tasks.named('test') {

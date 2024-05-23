@@ -1,18 +1,28 @@
 package sion.bestRoom.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
+@Slf4j
 class DabangServiceTest {
 
 
@@ -23,6 +33,86 @@ class DabangServiceTest {
         Long abc = 101L;
         String newurl = url + abc;
         System.out.println(newurl);
+    }
+
+    @Test
+    void csvTest(){
+
+
+        String csvFile = "C:\\Users\\sionkim\\Downloads\\bus_info.csv";
+
+        String jsonFile = "C:\\Users\\sionkim\\Downloads\\bus_info2.json"; // JSON 파일 경로
+
+
+        BufferedReader br = null;
+        String line;
+        String csvSplitBy = ","; // CSV 파일에서 사용하는 구분자
+
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode arrayNode = mapper.createArrayNode();
+
+        try {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile), StandardCharsets.UTF_8));
+            String[] headers = br.readLine().split(csvSplitBy); // 첫 번째 줄에서 헤더를 읽어옴
+
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(csvSplitBy);
+                ObjectNode objNode = mapper.createObjectNode();
+
+                for (int i = 0; i < headers.length; i++) {
+                    objNode.put(headers[i], values[i]);
+                }
+
+                arrayNode.add(objNode);
+            }
+
+            // JSON 파일로 쓰기
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(jsonFile), arrayNode);
+            System.out.println("CSV 파일이 JSON으로 성공적으로 변환되었습니다!");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
+    public static List<String[]> filterCSV(String filePath) {
+        List<String[]> filteredRecords = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] nextLine;
+            String[] header = reader.readNext();  // 헤더 읽기
+
+            if (header != null) {
+                filteredRecords.add(header);  // 필터된 결과에 헤더 추가
+            }
+
+            while ((nextLine = reader.readNext()) != null) {
+                System.out.println(" nextLine : = " + nextLine);
+                String cityName = nextLine[7];  // "관리도시명" 컬럼 인덱스 (여기서는 7번째)
+
+                System.out.println("cityName = " + cityName);
+                if ("안동".equals(cityName)) {
+                    filteredRecords.add(nextLine);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+
+        return filteredRecords;
     }
 
 
