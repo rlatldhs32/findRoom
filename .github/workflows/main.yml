@@ -2,7 +2,7 @@ name: main branch auto ci process script
 
 on: # 아래 job을 실행시킬 action
   push:
-    branches: [ dev_test ]
+    branches: [ dev ]
 
 jobs:
   deploy:
