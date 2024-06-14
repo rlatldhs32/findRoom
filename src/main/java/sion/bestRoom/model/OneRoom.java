@@ -21,6 +21,7 @@ public class OneRoom{
     private Long id;
 
     private String dabang_id;
+    private String zigbang_id;
     private String title;
     private String floor;
     private Long maintenance_fee; //관리비
