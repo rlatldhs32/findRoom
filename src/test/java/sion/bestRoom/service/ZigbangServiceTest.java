@@ -23,14 +23,7 @@ class ZigbangServiceTest {
     @Autowired
     ZigbangFeignClient zigbangFeignClient;
 
-    @Test
-    @DisplayName("직방에 있는 빌라 가져오기")
-    void getZigbangRooms() {
-        String zigbangRooms = zigbangService.getZigbangRooms();
 
-//        System.out.println("zigbangRooms = " + zigbangRooms);
-        Assertions.assertThat(zigbangRooms).isNotNull();
-    }
 
     @Test
     @DisplayName("직방에 있는 빌라 가져오기")
