@@ -3,7 +3,6 @@ package sion.bestRoom.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.feign.ZigbangFeignClient;
 import sion.bestRoom.feign.dto.zigbang.ReqZigbangRoomInfoDTO;
 import sion.bestRoom.feign.dto.zigbang.ResZigbangListDTO;
@@ -44,8 +43,7 @@ public class ZigbangService {
             saveZigbangVilla(reqZigbangRoomInfoDTO);
         }
 
-        return "success";
-
+        return "zigBangRooms saved!";
     }
 
     private void saveZigbangVilla(ReqZigbangRoomInfoDTO reqZigbangRoomInfoDTO) {
@@ -58,27 +56,29 @@ public class ZigbangService {
         //convert zigbangVillaList to OneRoomList
         for (ZigbangItemDetailDTO zigbangItemDetailDTO : zigbangVillaList) {
 
-            Long selling_type = 0L;
+            Integer selling_type = 0;
             if (zigbangItemDetailDTO.getSales_type().equals("전세")) {
-                selling_type = 1L;
+                selling_type = 1;
             } else if (zigbangItemDetailDTO.getSales_type().equals("매매")) {
-                selling_type = 2L;
+                selling_type = 2;
+            }
+
+            Double manage_cost = 0.0;
+            if (zigbangItemDetailDTO.getManage_cost() != null && !zigbangItemDetailDTO.getManage_cost().isEmpty()) {
+                manage_cost = Double.parseDouble(zigbangItemDetailDTO.getManage_cost());
             }
 
             OneRoom oneRoom = OneRoom.builder()
                     .title(zigbangItemDetailDTO.getTitle())
                     .zigbang_id(zigbangItemDetailDTO.getItem_id())
-//                    .room_type(zigbangItemDetailDTO.getService_type())
                     .room_type_str(zigbangItemDetailDTO.getService_type())
-                    //manage_cost가 null이거나 empty일 경우 0으로 처리
-                    .maintenance_fee(zigbangItemDetailDTO.getManage_cost() == null || zigbangItemDetailDTO.getManage_cost().isEmpty() ? 0
-                            : Double.parseDouble(zigbangItemDetailDTO.getManage_cost()))
+                    .maintenance_fee(manage_cost)
                     .floor(zigbangItemDetailDTO.getFloor())
                     .size(zigbangItemDetailDTO.getSize_m2())
                     .deposit(zigbangItemDetailDTO.getDeposit())
                     .monthly_rent(zigbangItemDetailDTO.getRent())
                     .img_url(zigbangItemDetailDTO.getImages_thumbnail())
-                    .total_price((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent())
+                    .total_price((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent() + manage_cost)
                     .x(zigbangItemDetailDTO.getLocation().getLng()) //경도  x : 경도 :
                     .y(zigbangItemDetailDTO.getLocation().getLat()) //위도  y : 위도 : latitude
                     .selling_type(selling_type)
@@ -93,7 +93,6 @@ public class ZigbangService {
     }
 
     public void deleteZigbangRooms() {
-
         oneRoomRepository.deleteByZigbangIdIsNotNull();
     }
 }

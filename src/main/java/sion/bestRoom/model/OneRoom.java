@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 public class OneRoom{
-//        extends Room{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String dabang_id;
     private String zigbang_id;
     private String title;
@@ -32,12 +30,10 @@ public class OneRoom{
     private Double size; // 면적
     private String img_url;
     private Double total_price; // 전세 + 월세의 총 가치 // 전세금 * 전환율(5.8) 나누기 12개월
-
     private Double x;
     private Double y;
-
     private String code;
-    private Long selling_type; //0:월세 ,1: 전세  2: 매매
+    private Integer selling_type; //0:월세 ,1: 전세  2: 매매
     private String selling_type_str;
 }
 

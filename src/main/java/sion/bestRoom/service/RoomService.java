@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.feign.DabangFeignClient;
-import sion.bestRoom.feign.ZigbangFeignClient;
 import sion.bestRoom.feign.dto.CityDTO;
 import sion.bestRoom.feign.response.DabangCityResponse;
 import sion.bestRoom.feign.response.DabangResponse;
@@ -25,95 +24,13 @@ import static java.lang.Thread.sleep;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class DabangService {
+public class RoomService {
 
     private final DabangFeignClient dabangFeignClient;
     private final OneRoomRepository oneRoomRepository;
     private final CityRepository cityRepository;
 
-    public List<OneRoom> getTop10CostEffectivenessRooms() {
-        //모든 DabangRoom에서, total
-        //total_price / size 가 가장 작은 탑 10
-        List<OneRoom> allRooms = oneRoomRepository.findAll();
-        allRooms.sort((o1, o2) -> {
-            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
-            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
-            return costEffectiveness1.compareTo(costEffectiveness2);
-        });
-        return allRooms.subList(0, 10);
-    }
-
-
-    public List<OneRoom> getTop10CostEffectivenessRoomsExceptSemiBaseMent() {
-        //모든 DabangRoom에서, total
-        //total_price / size 가 가장 작은 탑 10
-        List<OneRoom> allRooms = oneRoomRepository.findAll();
-        //allRooms의 floor가 반지층 이면 삭제
-        List<OneRoom> allRoomsExceptUnder = new ArrayList<>();
-        for (OneRoom allRoom : allRooms) {
-            if(!allRoom.getFloor().startsWith("반"))
-                allRoomsExceptUnder.add(allRoom);
-        }
-
-        allRoomsExceptUnder.sort((o1, o2) -> {
-            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
-            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
-            return costEffectiveness1.compareTo(costEffectiveness2);
-        });
-        return allRoomsExceptUnder.subList(0, 10);
-    }
-
-
-    public List<DabangRoomDTO> getDabangRooms() throws InterruptedException {
-
-        Long cnt = 1L ;
-        //지역을 파람으로 받아야함. TODO.
-        while(cnt<100L) {
-            DabangResponse sungnamEstate = dabangFeignClient.getSungNamEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
-            List<DabangRoomDTO> rooms = sungnamEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!sungnamEstate.getHas_more())
-                break;
-        }
-
-        cnt = 1L;
-        while(cnt<100L) {
-            DabangResponse eonTongEstate = dabangFeignClient.getEongTongEstate(cnt);
-            List<DabangRoomDTO> rooms = eonTongEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!eonTongEstate.getHas_more())
-                break;
-        }
-
-        cnt = 1L;
-
-        while(cnt<100L) {
-            DabangResponse meTanEstate = dabangFeignClient.getMatanEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
-            List<DabangRoomDTO> rooms = meTanEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!meTanEstate.getHas_more())
-                break;
-        }
-        return null;
-    }
-
-    private List<OneRoom> convertToOneRoom(List<DabangRoomDTO> rooms,String code) throws InterruptedException {
-
+    private List<OneRoom> convertDabangDtoToOneRoom(List<DabangRoomDTO> rooms,String code) {
         //convert DabangRoomDTO to OneRoomList
         List<OneRoom> oneRoomList = new ArrayList<>();
         for (DabangRoomDTO room : rooms) {
@@ -131,7 +48,6 @@ public class DabangService {
             else
                 maintenance_fee = maintenance_fee.substring(0, maintenance_fee.length() - 1);
 
-//            Long floorLong = Long.parseLong(floor.substring(0, floor.length() - 1));
             Double sizeDouble = Double.parseDouble(size.substring(0, size.length() - 2));
 
             //소수점 이하 버림
@@ -145,7 +61,7 @@ public class DabangService {
             }
             catch (NumberFormatException e)
             {
-                maintenance_feeLong= 99L;
+                maintenance_feeLong= 999L; //TODO: 이 경우 찾아야함.
                 log.error("maintenance_fee : {}", maintenance_fee);
             }
 
@@ -188,12 +104,6 @@ public class DabangService {
                     deposit = Long.parseLong(price_title.substring(0, price_title.length() ));
             }
 
-            if(deposit==800)
-            {
-                log.info("dabang_id : {}", room.getId());
-//                sleep(1000000000);
-            }
-
             OneRoom oneRoom = OneRoom.builder()
                     .title(room.getTitle())
                     .dabang_id(room.getId())
@@ -205,7 +115,7 @@ public class DabangService {
                     .deposit(deposit)
                     .monthly_rent(monthly_rent)
                     .img_url(room.getImg_url())
-                    .total_price((deposit * Constants.ConvertPercent) / 12 + monthly_rent)
+                    .total_price((deposit * Constants.ConvertPercent) / 12 + monthly_rent + maintenance_feeLong)
                     .x(room.getLocation().get(0)) //경도  x : 경도 :
                     .y(room.getLocation().get(1)) //위도  y : 위도 : latitude
                     .selling_type(room.getSelling_type())
@@ -220,33 +130,33 @@ public class DabangService {
     }
 
     public List<OneRoom> getAllRooms(Double x1, Double x2, Double y1, Double y2, Integer type) {
-
-        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYAndType(x1, x2, y1, y2,type);
+        List<OneRoom> oneRoomList;
+        if(type==null)
+            oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
+        else
+            oneRoomList = oneRoomRepository.findBetweenXAndYAndType(x1, x2, y1, y2,type);
         return oneRoomList;
     }
 
-    public List<OneRoom> getAllRoomTest(Double x1, Double x2, Double y1, Double y2) {
+    public List<OneRoom> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number,Integer type) {
+        List<OneRoom> oneRoomList;
+        if(type==null)
+            oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number);
+        else
+            oneRoomList = oneRoomRepository.findBetweenXAndYAndTypeOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,type);
 
-        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
-        return oneRoomList;
-    }
 
-    public List<OneRoom> getBestTop10Rooms(Double x1, Double x2, Double y1, Double y2) {
+        //이제 월세만 따져보자.
+        //관리세 + 월세
 
-        //x1, x2, y1, y2 사이에 있는 방들을 가져옴.
-        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDesc(x1, x2, y1, y2,20);
 
         return oneRoomList;
     }
 
     public List<City> getSeoulAreaCode() {
         DabangCityResponse seoulCity = dabangFeignClient.getSeoulCity();
-        //저장함.
         List<CityDTO> regions = seoulCity.getRegions();
-        //City Model에 저장함.
-
         List<City> cityList = new ArrayList<>();
-
         for (CityDTO region : regions) {
             City city = City.builder()
                     .code(region.getCode())
@@ -261,7 +171,7 @@ public class DabangService {
     }
 
 
-    public List<String> getAllRoomsInCity() throws InterruptedException {
+    public List<String> getDabangRoomsInCity() throws InterruptedException {
 
         List<City> cities = cityRepository.findAll();
         List<String> result = new ArrayList<>();
@@ -289,7 +199,7 @@ public class DabangService {
 
                         log.info("dabangResponse : {}", dabangResponse.getRooms().size());
                         List<DabangRoomDTO> rooms = dabangResponse.getRooms();
-                        List<OneRoom> roomList = convertToOneRoom(rooms,code);
+                        List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,code);
 
                         oneRoomRepository.saveAll(roomList);
                         roomCnt += rooms.size();
@@ -318,16 +228,89 @@ public class DabangService {
         return result;
     }
 
-    public void deleteAllAreas() {
-        cityRepository.deleteAll();
+
+
+
+
+    public List<OneRoom> getTop10CostEffectivenessRooms() {
+        List<OneRoom> allRooms = oneRoomRepository.findAll();
+        allRooms.sort((o1, o2) -> {
+            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
+            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
+            return costEffectiveness1.compareTo(costEffectiveness2);
+        });
+        return allRooms.subList(0, 10);
     }
+
+
+    public List<OneRoom> getTop10CostEffectivenessRoomsExceptSemiBaseMent() {
+        List<OneRoom> allRooms = oneRoomRepository.findAll();
+        //allRooms의 floor가 반지층 이면 삭제
+        List<OneRoom> allRoomsExceptUnder = new ArrayList<>();
+        for (OneRoom allRoom : allRooms) {
+            if(!allRoom.getFloor().startsWith("반"))
+                allRoomsExceptUnder.add(allRoom);
+        }
+
+        allRoomsExceptUnder.sort((o1, o2) -> {
+            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
+            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
+            return costEffectiveness1.compareTo(costEffectiveness2);
+        });
+        return allRoomsExceptUnder.subList(0, 10);
+    }
+
+
+    public List<DabangRoomDTO> getDabangRooms() throws InterruptedException {
+        Long cnt = 1L ;
+        while(cnt<100L) {
+            DabangResponse sungnamEstate = dabangFeignClient.getSungNamEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
+            List<DabangRoomDTO> rooms = sungnamEstate.getRooms();
+            log.info("rooms : {}", rooms.size());
+            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
+
+            oneRoomRepository.saveAll(roomList);
+
+            cnt++;
+            if(!sungnamEstate.getHas_more())
+                break;
+        }
+
+        cnt = 1L;
+        while(cnt<100L) {
+            DabangResponse eonTongEstate = dabangFeignClient.getEongTongEstate(cnt);
+            List<DabangRoomDTO> rooms = eonTongEstate.getRooms();
+            log.info("rooms : {}", rooms.size());
+            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
+
+            oneRoomRepository.saveAll(roomList);
+
+            cnt++;
+            if(!eonTongEstate.getHas_more())
+                break;
+        }
+
+        cnt = 1L;
+
+        while(cnt<100L) {
+            DabangResponse meTanEstate = dabangFeignClient.getMatanEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
+            List<DabangRoomDTO> rooms = meTanEstate.getRooms();
+            log.info("rooms : {}", rooms.size());
+            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
+
+            oneRoomRepository.saveAll(roomList);
+
+            cnt++;
+            if(!meTanEstate.getHas_more())
+                break;
+        }
+        return null;
+    }
+
+
 
     public void deleteAllRooms() {
         oneRoomRepository.deleteAll();
     }
 
-
-    public void deleteByTest(Long id) {
-        oneRoomRepository.deleteByfloor("반지층");
-    }
 }
