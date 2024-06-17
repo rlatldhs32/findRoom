@@ -84,4 +84,14 @@ public class SaveController {
         List<String> busNameList = busService.saveBus(dto);
         return busNameList;
     }
+
+    @Operation(summary = "직방에 있는 빌라 가져오기. ( 약 2만개 )")
+    @GetMapping("/villas")
+    public String getZigbangVillas() throws InterruptedException {
+        if(Constants.checkZigBangVillaList)
+            throw new RuntimeException("이미 직방 방 정보를 가져왔습니다.");
+        Constants.checkZigBangVillaList = true;
+        zigbangService.deleteZigbangRooms();
+        return zigbangService.getZigbangRooms();
+    }
 }

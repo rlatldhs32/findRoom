@@ -30,10 +30,6 @@ public class ZigbangService {
 
     public String getZigbangRooms() {
         ZigbangResponse res = zigbangFeignClient.getVilla("wyd");
-//                , 0L, 0L, true);
-        //현재 geohash wyd ( 대한민국 왼쪽위 ) 값 모두 가져옴 약 2.1만개
-        List<OneRoom> oneRoomList = new ArrayList<>();
-
         List<ZigbangItemDTO> items = res.getItems();
 
         List<Long> itemIds = new ArrayList<>();
@@ -83,8 +79,8 @@ public class ZigbangService {
                     .monthly_rent(zigbangItemDetailDTO.getRent())
                     .img_url(zigbangItemDetailDTO.getImages_thumbnail())
                     .total_price((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent())
-                    .x(zigbangItemDetailDTO.getLocation().getLat()) //경도  x : 경도 :
-                    .y(zigbangItemDetailDTO.getLocation().getLng()) //위도  y : 위도 : latitude
+                    .x(zigbangItemDetailDTO.getLocation().getLng()) //경도  x : 경도 :
+                    .y(zigbangItemDetailDTO.getLocation().getLat()) //위도  y : 위도 : latitude
                     .selling_type(selling_type)
                     .selling_type_str(zigbangItemDetailDTO.getSales_type())
                     .code("zigbang")
@@ -96,4 +92,8 @@ public class ZigbangService {
         oneRoomRepository.saveAll(oneRooms);
     }
 
+    public void deleteZigbangRooms() {
+
+        oneRoomRepository.deleteByZigbangIdIsNotNull();
+    }
 }
