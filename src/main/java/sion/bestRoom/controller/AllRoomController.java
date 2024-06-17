@@ -74,7 +74,7 @@ public class AllRoomController {
         if(Constants.checkRoomList)
             throw new RuntimeException("이미 방 정보를 가져왔습니다.");
         Constants.checkRoomList = true;
-        dabangService.deleteAllRooms();
+//        dabangService.deleteAllRooms();
         List<String> allRoomsInCity = dabangService.getAllRoomsInCity();
         return allRoomsInCity;
     }

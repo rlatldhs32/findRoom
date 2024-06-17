@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ZigbangItemDetailDTO {
     private String item_id;
-    private List<Double> location;
+    private ZigbangLocationDTO location;
     private String title;
 
     private String sales_type; //전세 월세
@@ -30,5 +30,5 @@ public class ZigbangItemDetailDTO {
     //전용면적, 공급면적까지 따져야함. TODO
 
 
-    private Double manage_cost;
+    private String manage_cost;
 }

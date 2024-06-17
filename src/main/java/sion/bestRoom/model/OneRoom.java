@@ -24,7 +24,7 @@ public class OneRoom{
     private String zigbang_id;
     private String title;
     private String floor;
-    private Long maintenance_fee; //관리비
+    private Double maintenance_fee; //관리비
     private Long deposit; //보증금
     private Long monthly_rent; //월세
     private Long room_type; //방 종류
@@ -37,5 +37,7 @@ public class OneRoom{
     private Double y;
 
     private String code;
+    private Long selling_type; //0:월세 ,1: 전세  2: 매매
+    private String selling_type_str;
 }
 

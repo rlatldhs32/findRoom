@@ -10,6 +10,7 @@ import sion.bestRoom.model.City;
 import sion.bestRoom.service.BusService;
 import sion.bestRoom.service.DabangService;
 import sion.bestRoom.service.SubwayService;
+import sion.bestRoom.service.ZigbangService;
 import sion.bestRoom.util.Constants;
 
 import java.util.List;
@@ -20,9 +21,25 @@ import java.util.List;
 @Slf4j
 public class SaveController {
 
+    private final ZigbangService zigbangService;
     private final DabangService dabangService;
     private final SubwayService subwayService; //TODO: 모으기
     private final BusService busService;
+
+    @Operation(summary = "직방+다방 방 정보 저장하기. 처음에 수행하면 됨.")
+    @GetMapping("/all/rooms")
+    public List<String> getZigAndDabangRooms() throws InterruptedException {
+        if(Constants.checkRoomList)
+            throw new RuntimeException("이미 방 정보를 가져왔습니다.");
+        Constants.checkRoomList = true;
+        dabangService.deleteAllRooms();
+        dabangService.deleteAllAreas();
+        List<City> seoulAreaCode = dabangService.getSeoulAreaCode();
+        List<String> allRoomsInCity = dabangService.getAllRoomsInCity();
+        String zigbangRooms = zigbangService.getZigbangRooms();
+
+        return allRoomsInCity;
+    }
 
     @Operation(summary = "서울시 내 구역 code 가져오기")
     @GetMapping("/dabang/area/seoul")

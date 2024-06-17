@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.feign.DabangFeignClient;
+import sion.bestRoom.feign.ZigbangFeignClient;
 import sion.bestRoom.feign.dto.CityDTO;
 import sion.bestRoom.feign.response.DabangCityResponse;
 import sion.bestRoom.feign.response.DabangResponse;
@@ -196,7 +197,7 @@ public class DabangService {
                     .dabang_id(room.getId())
                     .room_type(room.getRoom_type())
                     .room_type_str(room.getRoom_type_str())
-                    .maintenance_fee(maintenance_feeLong)
+                    .maintenance_fee(Double.valueOf(maintenance_feeLong))
                     .floor(floor)
                     .size(sizeDouble)
                     .deposit(deposit)
@@ -205,6 +206,8 @@ public class DabangService {
                     .total_price((deposit * Constants.ConvertPercent) / 12 + monthly_rent)
                     .x(room.getLocation().get(0)) //경도  x : 경도 :
                     .y(room.getLocation().get(1)) //위도  y : 위도 : latitude
+                    .selling_type(room.getSelling_type())
+                    .selling_type_str(room.getSelling_type_str())
                     .code(code)
                     .build();
             oneRoomList.add(oneRoom);
