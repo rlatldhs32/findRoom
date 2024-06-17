@@ -7,7 +7,11 @@
 //import com.opencsv.exceptions.CsvValidationException;
 //import lombok.extern.slf4j.Slf4j;
 //import org.assertj.core.api.Assertions;
+//import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import sion.bestRoom.model.OneRoom;
 //
 //import java.io.*;
 //import java.math.BigInteger;
@@ -23,9 +27,82 @@
 //
 //
 //@Slf4j
+//@SpringBootTest
 //class DabangServiceTest {
 //
 //
+//    @Autowired
+//    private DabangService dabangService;
+//
+//    @Test
+//    @DisplayName("query 시간테스트")
+//    void testTimeQuery(){
+//
+//        long start2 = System.currentTimeMillis();
+//        List<OneRoom> bestTopRooms2 = dabangService.getAllRoomTest(127.052258761841, 127.072258761841, 37.2549398021063, 37.5549398021063);
+//        bestTopRooms2.sort((o1, o2) -> {
+//            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
+//            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
+//            return costEffectiveness1.compareTo(costEffectiveness2);
+//        });
+//        long end2 = System.currentTimeMillis();
+//
+//        //쿼리 시간 측정
+//        long start = System.currentTimeMillis();
+//        List<OneRoom> bestTopRooms1 = dabangService.getBestTop10Rooms(127.052258761841, 127.072258761841, 37.2549398021063, 37.5549398021063);
+//        long end = System.currentTimeMillis();
+//        System.out.println("쿼리 시간 : " + (end - start) + "ms");
+//
+//        //하고 정렬 시간
+////        long start2 = System.currentTimeMillis();
+////        List<OneRoom> bestTopRooms2 = dabangService.getAllRoomTest(127.052258761841, 127.072258761841, 37.2549398021063, 37.5549398021063);
+////        bestTopRooms2.sort((o1, o2) -> {
+////            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
+////            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
+////            return costEffectiveness1.compareTo(costEffectiveness2);
+////        });
+////        long end2 = System.currentTimeMillis();
+//        System.out.println("쿼리 시간 : " + (end - start) + "ms");
+//        System.out.println("정렬 시간 : " + (end2 - start2) + "ms");
+//
+//        Assertions.assertThat(end-start).isLessThan(end2-start);
+//
+//    }
+//
+//
+//    @Test
+//    @DisplayName("query로 하기 vs 밖에서 정렬하기 차이 확인")
+//    void test5(){
+//
+//        //시간차이 테스트
+//
+//        List<OneRoom> bestTopRooms1 = dabangService.getBestTop10Rooms(127.052258761841, 127.072258761841, 37.2549398021063, 37.5549398021063);
+//        List<OneRoom> bestTopRooms2 = dabangService.getAllRoomTest(127.052258761841, 127.072258761841, 37.2549398021063, 37.5549398021063);
+//
+//        //정렬
+//        bestTopRooms2.sort((o1, o2) -> {
+//            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
+//            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
+//            return costEffectiveness1.compareTo(costEffectiveness2);
+//        });
+//
+//        List<OneRoom> bestTop20Rooms1 = bestTopRooms1.subList(0, 20);
+//        List<OneRoom> bestTop20Rooms2 = bestTopRooms2.subList(0, 20);
+//
+//        List<Long> bestTop20RoomIds1 = new ArrayList<>();
+//        List<Long> bestTop20RoomIds2 = new ArrayList<>();
+//
+//        for (OneRoom oneRoom : bestTop20Rooms1) {
+//            bestTop20RoomIds1.add(oneRoom.getId());
+//        }
+//        for (OneRoom oneRoom : bestTop20Rooms2) {
+//            bestTop20RoomIds2.add(oneRoom.getId());
+//        }
+//
+//        Assertions.assertThat(bestTop20RoomIds1).isEqualTo(bestTop20RoomIds2);
+//
+//
+//    }
 //
 //    @Test
 //    void test2(){

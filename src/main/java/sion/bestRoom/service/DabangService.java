@@ -1,5 +1,6 @@
 package sion.bestRoom.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
+@Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -217,18 +219,22 @@ public class DabangService {
 
     }
 
-    public List<OneRoom> getAllRooms(Double x1, Double x2, Double y1, Double y2) {
+    public List<OneRoom> getAllRooms(Double x1, Double x2, Double y1, Double y2, Integer type) {
 
-        //x1, x2, y1, y2 사이에 있는 방들을 가져옴.
+        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYAndType(x1, x2, y1, y2,type);
+        return oneRoomList;
+    }
+
+    public List<OneRoom> getAllRoomTest(Double x1, Double x2, Double y1, Double y2) {
+
         List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
-
         return oneRoomList;
     }
 
     public List<OneRoom> getBestTop10Rooms(Double x1, Double x2, Double y1, Double y2) {
 
         //x1, x2, y1, y2 사이에 있는 방들을 가져옴.
-        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDesc(x1, x2, y1, y2);
+        List<OneRoom> oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDesc(x1, x2, y1, y2,20);
 
         return oneRoomList;
     }
@@ -318,5 +324,10 @@ public class DabangService {
 
     public void deleteAllRooms() {
         oneRoomRepository.deleteAll();
+    }
+
+
+    public void deleteByTest(Long id) {
+        oneRoomRepository.deleteByfloor("반지층");
     }
 }
