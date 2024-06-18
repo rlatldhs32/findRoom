@@ -45,12 +45,10 @@ public class RoomController {
                                        @Parameter(description = "경도2 : ex) 127.072258761841")@RequestParam(name="x2") Double x2,
                                        @Parameter(description = "위도1 : ex) 37.2549398021063") @RequestParam(name="y1") Double y1,
                                        @Parameter(description = "위도2 : ex) 37.5549398021063") @RequestParam(name="y2") Double y2,
-                                       @Parameter(description = "TOP 방 갯수") @RequestParam(name="number",required = false, defaultValue = "10") Integer number
-    ) {
-        return roomService.getBestTopRooms(x1, x2, y1, y2,number,type);
+                                       @Parameter(description = "TOP 방 갯수") @RequestParam(name="number",required = false, defaultValue = "10") Integer number,
+                                       @Parameter(description = "최소 평수") @RequestParam(name="minSize",required = false, defaultValue = "0") Double minSize) {
+        return roomService.getBestTopRooms(x1, x2, y1, y2,number,type,minSize);
     }
-
-
 
 
 

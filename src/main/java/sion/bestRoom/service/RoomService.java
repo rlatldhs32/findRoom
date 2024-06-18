@@ -138,12 +138,12 @@ public class RoomService {
         return oneRoomList;
     }
 
-    public List<OneRoom> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number,Integer type) {
+    public List<OneRoom> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number,Integer type,Double minSize) {
         List<OneRoom> oneRoomList;
         if(type==null)
-            oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number);
+            oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,minSize);
         else
-            oneRoomList = oneRoomRepository.findBetweenXAndYAndTypeOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,type);
+            oneRoomList = oneRoomRepository.findBetweenXAndYAndTypeOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,type,minSize);
 
 
         //이제 월세만 따져보자.
