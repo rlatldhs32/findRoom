@@ -19,6 +19,7 @@
         <p>id : <span th:text="${property.id}"></span></p>
         <p>다방 ID : <span th:text="${property.dabangId}"></span></p>
         <p>직방 ID : <span th:text="${property.zigbangId}"></span></p>
+        <p>링크 txt : <span th:text="${property.redirectUrl}"></span></p>
         <p>링크 : <a th:href="@{'/property/' + ${property.redirectUrl}}" th:text="${property.redirectUrl}"></a></p>
     </div>
 </div>
