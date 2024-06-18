@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>가성비 모란 전/월세집 TOP 10</title>
+</head>
+<body>
+<h1>가성비 모란 전/월세집 TOP 10</h1>
+<div th:each="property : ${dabangRooms}">
+    <div>
+        <a th:href="@{'/property/' + ${property.redirectUrl}}"> <!-- 여기서 property.id는 해당 아이템의 고유한 식별자입니다. -->
+            <img th:src="${property.imageUrl}" alt="Image">
+        </a>
+    </div>
+    <div>
+        <p>전세금: <span th:text="${property.deposit}"></span></p>
+        <p>월세: <span th:text="${property.monthlyRent}"></span></p>
+        <p>평수 (m^2) : <span th:text="${property.size}"></span></p>
+        <p>id : <span th:text="${property.id}"></span></p>
+        <p>다방 ID : <span th:text="${property.dabangId}"></span></p>
+        <p>직방 ID : <span th:text="${property.zigbangId}"></span></p>
+        <p>링크 : <a th:href="@{'/property/' + ${property.redirectUrl}}" th:text="${property.redirectUrl}"></a></p>
+    </div>
+</div>
+</body>
+</html>

@@ -16,17 +16,17 @@ import java.util.List;
 //@RestController
 @Controller
 @RequiredArgsConstructor
-public class DabangController {
+public class RoomFrontController {
 
     private final RoomService roomService;
 
-    @GetMapping("/dabang")
+    @GetMapping("/good")
     public String getDabangRooms() throws InterruptedException {
         List<DabangRoomDTO> dabangRooms = roomService.getDabangRooms(); //걸어놓은 모든 곳을 다방에서 가져옴.
         return "index";
     }
 
-    @GetMapping("/dabang/effective")
+    @GetMapping("/good/effective")
     public String  getEffectiveRooms(Model model) { //sungName 우선
         List<OneRoom> dabangRooms = roomService.getTop10CostEffectivenessRooms();
         List<ShowDabang> showDabangs = convertToShowDabang(dabangRooms);
@@ -34,7 +34,7 @@ public class DabangController {
         return "dabangTest";
     }
 
-    @GetMapping("/dabang/effective/exceptBack")
+    @GetMapping("/good/effective/exceptBack")
     public String  getEffectiveRoomsexceptBack(Model model) { //sungName 우선
         List<OneRoom> dabangRooms = roomService.getTop10CostEffectivenessRoomsExceptSemiBaseMent();
         List<ShowDabang> showDabangs = convertToShowDabang(dabangRooms);
@@ -48,16 +48,26 @@ public class DabangController {
     private List<ShowDabang> convertToShowDabang(List<OneRoom> dabangRooms) {
         List<ShowDabang> showDabangs = new ArrayList<>();
         for (OneRoom dabangRoom : dabangRooms) {
-            String redirectUrl = "https://www.dabangapp.com/room/" + dabangRoom.getDabang_id();
+            String redirectUrl = "";
+            String imageUrl = dabangRoom.getImg_url();
+            if(dabangRoom.getZigbang_id()!=null)
+                imageUrl+="?w=300&h=400";
+            if(dabangRoom.getZigbang_id() != null)
+                redirectUrl = "https://www.zigbang.com/home/villa/items/" + dabangRoom.getZigbang_id();
+            else if(dabangRoom.getDabang_id() != null)
+                redirectUrl ="https://www.dabangapp.com/room/" + dabangRoom.getDabang_id();
             ShowDabang showDabang = new ShowDabang();
             showDabang.setDeposit(dabangRoom.getDeposit());
             showDabang.setMonthlyRent(dabangRoom.getMonthly_rent());
             showDabang.setSize(dabangRoom.getSize());
-            showDabang.setImageUrl(dabangRoom.getImg_url());
+            showDabang.setImageUrl(imageUrl);
             showDabang.setRedirectUrl(redirectUrl);
             showDabang.setX(dabangRoom.getX());
             showDabang.setY(dabangRoom.getY());
             showDabangs.add(showDabang);
+            showDabang.setId(dabangRoom.getId());
+            showDabang.setDabangId(dabangRoom.getDabang_id());
+            showDabang.setZigbangId(dabangRoom.getZigbang_id());
         }
         return showDabangs;
     }

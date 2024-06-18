@@ -18,6 +18,10 @@ public class ShowDabang {
     private String redirectUrl;
     private Double size;
 
+    private Long id;
+    private String dabangId;
+    private String zigbangId;
+
 
     private Double x;
     private Double y;
