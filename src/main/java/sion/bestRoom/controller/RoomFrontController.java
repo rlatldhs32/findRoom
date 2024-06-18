@@ -36,8 +36,8 @@ public class RoomFrontController {
 
     @GetMapping("/good/effective/exceptBack")
     public String  getEffectiveRoomsexceptBack(Model model) { //sungName 우선
-        List<OneRoom> dabangRooms = roomService.getTop10CostEffectivenessRoomsExceptSemiBaseMent();
-        List<ShowDabang> showDabangs = convertToShowDabang(dabangRooms);
+        List<OneRoom> bestTopRooms = roomService.getBestTopRooms(126.93, 127.2, 37.412603, 37.5171, 20, 0);
+        List<ShowDabang> showDabangs = convertToShowDabang(bestTopRooms);
         model.addAttribute("dabangRooms", showDabangs);
         return "dabangTest";
     }

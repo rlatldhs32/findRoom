@@ -14,6 +14,5 @@ public interface OneRoomQdsl {
 
     List<OneRoom> findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(Double x1, Double x2, Double y1, Double y2, Integer limit);
 
-
     List<OneRoom> findBetweenXAndYAndTypeOrderByTotalPriceDividedBySizeDescLimit(Double x1, Double x2, Double y1, Double y2, Integer limit, Integer type);
 }
