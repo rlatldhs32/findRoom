@@ -59,14 +59,13 @@ public class SchedulerConfig {
             log.info("Schedule TIME = " + LocalDateTime.ofInstant(now, ZoneOffset.UTC));
             roomService.deleteAllRooms();
             cityService.deleteAllCities();
-            List<City> seoulAreaCode = roomService.getSeoulAreaCode();
+            roomService.getSeoulAreaCode();
+            zigbangService.getZigbangRooms();
             try {
-                List<String> allRoomsInCity = roomService.getDabangRoomsInCity();
+                roomService.getDabangRoomsInCity();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            String zigbangRooms = zigbangService.getZigbangRooms();
         };
     }
-
 }

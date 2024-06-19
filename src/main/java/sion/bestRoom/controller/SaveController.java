@@ -71,13 +71,14 @@ public class SaveController {
 
     @Operation(summary = "버스정류장 정보 저장하기.")
     @PostMapping("/bus")
-    public List<String> saveBusArea(@RequestBody CreateBusDTO dto) {
+    public String saveBusArea() {
         if(Constants.checkBusList)
             throw new RuntimeException("이미 버스 정보를 가져왔습니다.");
         Constants.checkBusList = true;
         busService.deleteAllBus();
-        List<String> busNameList = busService.saveBus(dto);
-        return busNameList;
+        return busService.saveBusByFeignClient();
+//        List<String> busNameList = busService.saveBus(dto);
+//        return busNameList;
     }
 
     @Operation(summary = "직방에 있는 빌라 가져오기. ( 약 2만개 )")

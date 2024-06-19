@@ -15,11 +15,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class DabangResponse {
 
-
-//    private Object features;
-//    private Object map_list_banner;
-//    private Object total;
-
     private Boolean has_more;
     private Long page;
 
