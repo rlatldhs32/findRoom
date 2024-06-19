@@ -20,12 +20,6 @@ public class RoomFrontController {
 
     private final RoomService roomService;
 
-    @GetMapping("/good")
-    public String getDabangRooms() throws InterruptedException {
-        List<DabangRoomDTO> dabangRooms = roomService.getDabangRooms(); //걸어놓은 모든 곳을 다방에서 가져옴.
-        return "index";
-    }
-
     @GetMapping("/good/effective")
     public String  getEffectiveRooms(Model model) { //sungName 우선
         List<OneRoom> dabangRooms = roomService.getTop10CostEffectivenessRooms();

@@ -230,8 +230,6 @@ public class RoomService {
 
 
 
-
-
     public List<OneRoom> getTop10CostEffectivenessRooms() {
         List<OneRoom> allRooms = oneRoomRepository.findAll();
         allRooms.sort((o1, o2) -> {
@@ -240,71 +238,6 @@ public class RoomService {
             return costEffectiveness1.compareTo(costEffectiveness2);
         });
         return allRooms.subList(0, 10);
-    }
-
-
-    public List<OneRoom> getTop10CostEffectivenessRoomsExceptSemiBaseMent() {
-        List<OneRoom> allRooms = oneRoomRepository.findAll();
-        //allRooms의 floor가 반지층 이면 삭제
-        List<OneRoom> allRoomsExceptUnder = new ArrayList<>();
-        for (OneRoom allRoom : allRooms) {
-            if(!allRoom.getFloor().startsWith("반"))
-                allRoomsExceptUnder.add(allRoom);
-        }
-
-        allRoomsExceptUnder.sort((o1, o2) -> {
-            Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
-            Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
-            return costEffectiveness1.compareTo(costEffectiveness2);
-        });
-        return allRoomsExceptUnder.subList(0, 10);
-    }
-
-
-    public List<DabangRoomDTO> getDabangRooms() throws InterruptedException {
-        Long cnt = 1L ;
-        while(cnt<100L) {
-            DabangResponse sungnamEstate = dabangFeignClient.getSungNamEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
-            List<DabangRoomDTO> rooms = sungnamEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!sungnamEstate.getHas_more())
-                break;
-        }
-
-        cnt = 1L;
-        while(cnt<100L) {
-            DabangResponse eonTongEstate = dabangFeignClient.getEongTongEstate(cnt);
-            List<DabangRoomDTO> rooms = eonTongEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!eonTongEstate.getHas_more())
-                break;
-        }
-
-        cnt = 1L;
-
-        while(cnt<100L) {
-            DabangResponse meTanEstate = dabangFeignClient.getMatanEstate(cnt); //TODO: 파람으로 지역도 바꿔야함.
-            List<DabangRoomDTO> rooms = meTanEstate.getRooms();
-            log.info("rooms : {}", rooms.size());
-            List<OneRoom> roomList = convertDabangDtoToOneRoom(rooms,"0");
-
-            oneRoomRepository.saveAll(roomList);
-
-            cnt++;
-            if(!meTanEstate.getHas_more())
-                break;
-        }
-        return null;
     }
 
 

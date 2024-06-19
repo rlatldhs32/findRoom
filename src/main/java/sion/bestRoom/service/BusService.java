@@ -26,7 +26,6 @@ public class BusService {
         busRepository.deleteAll();
     }
 
-
     public String saveBusByFeignClient(){
         //1000씩 105까지 호출
         for(int i=1;i<=105;i++){
@@ -35,7 +34,6 @@ public class BusService {
         }
         return "BUS_SAVED";
     }
-
 
     public List<String> saveBus(CreateBusDTO dto) {
         // 우선 경기/인천/서울로 시작하는 애들만 저장
@@ -61,27 +59,5 @@ public class BusService {
         busRepository.saveAll(busList);
 
         return busNameList;
-    }
-
-    public List<String> saveSubway(CreateSubwayDTO dto) {
-        List<String> subwayNameList = new ArrayList<>();
-
-        List<Subway> subwayList = new ArrayList<>();
-
-        dto.getData().forEach(subwayInfoDTO -> {
-            Subway subway = Subway.builder()
-                    .name(subwayInfoDTO.getStatn_nm())
-                    .line(subwayInfoDTO.getRoute())
-                    .code(subwayInfoDTO.getStatn_id())
-                    .x(Double.parseDouble(subwayInfoDTO.getCrdnt_x()))
-                    .y(Double.parseDouble(subwayInfoDTO.getCrdnt_y()))
-                    .build();
-            subwayList.add(subway);
-            subwayNameList.add(subwayInfoDTO.getStatn_nm());
-        });
-
-//        subwayRepository.saveAll(subwayList);
-
-        return subwayNameList;
     }
 }
