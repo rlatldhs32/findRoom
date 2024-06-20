@@ -1,6 +1,7 @@
 package sion.bestRoom.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,8 @@ import sion.bestRoom.service.*;
 import sion.bestRoom.util.Constants;
 
 import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,21 +35,20 @@ public class SaveController {
         Constants.checkRoomList = true;
         roomService.deleteAllRooms();
         cityService.deleteAllCities();
-        List<City> seoulAreaCode = roomService.getSeoulAreaCode();
+        List<City> areaCode = roomService.getGeongGiAndSeoulAreaCode();
         List<String> allRoomsInCity = roomService.getDabangRoomsInCity();
         String zigbangRooms = zigbangService.getZigbangRooms();
-
         return allRoomsInCity;
     }
 
-    @Operation(summary = "서울시 내 구역 code 가져오기 . dabang 룸 저장 전에 시행.")
-    @GetMapping("/dabang/area/seoul")
+    @Operation(summary = "수도권 내 구역 code 가져오기 . dabang 룸 저장 전에 시행.")
+    @GetMapping("/dabang/area")
     public List<City> getAllRooms() {
-        if(Constants.checkSeoulAreaList)
-            throw new RuntimeException("이미 서울시 구역 코드를 가져왔습니다.");
-        Constants.checkSeoulAreaList = true;
+        if(Constants.checkAreaList)
+            throw new RuntimeException("이미 수도권 구역 코드를 가져왔습니다.");
+        Constants.checkAreaList = true;
         cityService.deleteAllCities();
-        return roomService.getSeoulAreaCode();
+        return roomService.getGeongGiAndSeoulAreaCode();
     }
 
     @Operation(summary = "저장된 도시들의 다방 정보 가져오기.")

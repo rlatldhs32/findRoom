@@ -2,6 +2,9 @@ package sion.bestRoom.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import sion.bestRoom.model.OneRoom;
 
 import java.util.List;
@@ -62,4 +65,6 @@ public class OneRoomQdslImpl implements OneRoomQdsl{
                 .limit(limit)
                 .fetch();
     }
+
+
 }

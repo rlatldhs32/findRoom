@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.CreateSubwayDTO;
 import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.SubwayRepository;
+import sion.bestRoom.util.CalculateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class SubwayService {
                     .code(subwayInfoDTO.getStatn_id())
                     .x(Double.parseDouble(subwayInfoDTO.getCrdnt_x()))
                     .y(Double.parseDouble(subwayInfoDTO.getCrdnt_y()))
+                    .location(CalculateUtil.calculatePoint(Double.parseDouble(subwayInfoDTO.getCrdnt_x()), Double.parseDouble(subwayInfoDTO.getCrdnt_y())))
                     .build();
             subwayList.add(subway);
             subwayNameList.add(subwayInfoDTO.getStatn_nm());
@@ -39,5 +41,9 @@ public class SubwayService {
         subwayRepository.saveAll(subwayList);
 
         return subwayNameList;
+    }
+
+    public List<Subway> getSubwayList() {
+        return subwayRepository.findAll();
     }
 }

@@ -9,4 +9,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      dialect: org.hibernate.dialect.MariaDBDialect
+      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+      spatial:
+        enabled: true
     show-sql: true

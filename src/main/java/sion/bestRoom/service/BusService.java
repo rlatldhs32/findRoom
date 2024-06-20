@@ -10,6 +10,7 @@ import sion.bestRoom.model.Bus;
 import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.BusRepository;
 import sion.bestRoom.repository.SubwayRepository;
+import sion.bestRoom.util.CalculateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,7 @@ public class BusService {
                             .code(busInfoDTO.get정류장번호())
                             .x(Double.parseDouble(busInfoDTO.get경도()))
                             .y(Double.parseDouble(busInfoDTO.get위도()))
+                            .location(CalculateUtil.calculatePoint(Double.parseDouble(busInfoDTO.get경도()), Double.parseDouble(busInfoDTO.get위도())))
                             .build();
                     busNameList.add(busInfoDTO.get정류장명());
                     return bus;

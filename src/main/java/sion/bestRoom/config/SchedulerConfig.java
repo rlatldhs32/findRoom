@@ -59,7 +59,7 @@ public class SchedulerConfig {
             log.info("Schedule TIME = " + LocalDateTime.ofInstant(now, ZoneOffset.UTC));
             roomService.deleteAllRooms();
             cityService.deleteAllCities();
-            roomService.getSeoulAreaCode();
+            roomService.getGeongGiAndSeoulAreaCode();
             zigbangService.getZigbangRooms();
             try {
                 roomService.getDabangRoomsInCity();

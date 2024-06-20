@@ -70,6 +70,10 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	//
+	implementation 'org.locationtech.jts:jts-core:1.17.1'
+	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '6.4.4.Final'
+
 
 }
 

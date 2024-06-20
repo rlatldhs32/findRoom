@@ -37,8 +37,6 @@ public class RoomFrontController {
     }
 
 
-
-
     private List<ShowDabang> convertToShowDabang(List<OneRoom> dabangRooms) {
         List<ShowDabang> showDabangs = new ArrayList<>();
         for (OneRoom dabangRoom : dabangRooms) {

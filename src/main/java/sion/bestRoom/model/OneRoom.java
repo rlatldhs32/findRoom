@@ -1,13 +1,14 @@
 package sion.bestRoom.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.annotations.Type;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,5 +36,18 @@ public class OneRoom{
     private String code;
     private Integer selling_type; //0:월세 ,1: 전세  2: 매매
     private String selling_type_str;
+
+    //가성비 저장
+    private Double cost_divided_size;
+
+    private Double cost_divided_size_percent;
+
+    @Column(columnDefinition = "POINT")
+    private Point location;
+
+
+    public void setCostPercent(Double percent) {
+        this.cost_divided_size_percent = percent;
+    }
 }
 

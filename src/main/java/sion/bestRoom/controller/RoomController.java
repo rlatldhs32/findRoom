@@ -50,6 +50,13 @@ public class RoomController {
         return roomService.getBestTopRooms(x1, x2, y1, y2,number,type,minSize);
     }
 
+    @Operation(summary = "주위 1km 반경 이내 평당 가격이 낮은 만큼 랭킹 계산해서 db에 저장 요청. 현재 5만개 방 기준 20초 걸림.")
+    @PostMapping("/calulate/cost-size/rank")
+    public String calculateCostSizeRank() {
+        roomService.calculateAllRoomsCostDividedSizeRank();
+        return "calculateCostSizeRank Success";
+    }
+
 
 
 }

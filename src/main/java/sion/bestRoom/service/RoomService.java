@@ -3,6 +3,10 @@ package sion.bestRoom.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKTWriter;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.feign.DabangFeignClient;
@@ -11,12 +15,13 @@ import sion.bestRoom.feign.response.DabangCityResponse;
 import sion.bestRoom.feign.response.DabangResponse;
 import sion.bestRoom.model.City;
 import sion.bestRoom.model.OneRoom;
+import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.CityRepository;
 import sion.bestRoom.repository.OneRoomRepository;
+import sion.bestRoom.util.CalculateUtil;
 import sion.bestRoom.util.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Thread.sleep;
 
@@ -29,6 +34,7 @@ public class RoomService {
     private final DabangFeignClient dabangFeignClient;
     private final OneRoomRepository oneRoomRepository;
     private final CityRepository cityRepository;
+    private final SubwayService subwayService;
 
     private List<OneRoom> convertDabangDtoToOneRoom(List<DabangRoomDTO> rooms,String code) {
         //convert DabangRoomDTO to OneRoomList
@@ -104,6 +110,9 @@ public class RoomService {
                     deposit = Long.parseLong(price_title.substring(0, price_title.length() ));
             }
 
+            Double cost_divided_size = ((deposit * Constants.ConvertPercent) / 12 + monthly_rent + maintenance_feeLong) / sizeDouble;
+
+
             OneRoom oneRoom = OneRoom.builder()
                     .title(room.getTitle())
                     .dabang_id(room.getId())
@@ -121,6 +130,8 @@ public class RoomService {
                     .selling_type(room.getSelling_type())
                     .selling_type_str(room.getSelling_type_str())
                     .code(code)
+                    .location(CalculateUtil.calculatePoint(room.getLocation().get(0), room.getLocation().get(1)))
+                    .cost_divided_size(cost_divided_size)
                     .build();
             oneRoomList.add(oneRoom);
         }
@@ -153,9 +164,19 @@ public class RoomService {
         return oneRoomList;
     }
 
-    public List<City> getSeoulAreaCode() {
-        DabangCityResponse seoulCity = dabangFeignClient.getSeoulCity();
-        List<CityDTO> regions = seoulCity.getRegions();
+    public List<City> getGeongGiAndSeoulAreaCode() {
+        DabangCityResponse geongGiNorthCity = dabangFeignClient.getGeongGiNorthCity();
+        DabangCityResponse geongGiSouthCity = dabangFeignClient.getGeongGiSouthCity();
+        //겹치는 code는 삭제
+        List<CityDTO> geongGiNorth = geongGiNorthCity.getRegions();
+        List<CityDTO> geongGiSouth = geongGiSouthCity.getRegions();
+        Set<CityDTO> regionSet = new HashSet<>();
+        regionSet.addAll(geongGiNorth);
+        regionSet.addAll(geongGiSouth);
+
+
+        List<CityDTO> regions = new ArrayList<>(regionSet);
+
         List<City> cityList = new ArrayList<>();
         for (CityDTO region : regions) {
             City city = City.builder()
@@ -163,6 +184,7 @@ public class RoomService {
                     .name(region.getName())
                     .x(region.getLocation().get(0))
                     .y(region.getLocation().get(1))
+                    .location(CalculateUtil.calculatePoint(region.getLocation().get(0), region.getLocation().get(1)))
                     .build();
             cityList.add(city);
         }
@@ -240,10 +262,53 @@ public class RoomService {
         return allRooms.subList(0, 10);
     }
 
+    //각 룸별로, 가장 가까운 subWay와의 거리를 room Entity의 subWayDistance에  저장
+    //위도와 경도를 가지고 m단위로 거리를 계산
 
 
     public void deleteAllRooms() {
         oneRoomRepository.deleteAll();
     }
+
+    public List<OneRoom> getRoomsWithinDistance(Double targetX, Double targetY, double distance) {
+        // WKT (Well-Known Text) 포맷으로 좌표를 표현
+        GeometryFactory geometryFactory = new GeometryFactory();
+        WKTWriter writer = new WKTWriter();
+        Coordinate coordinate = new Coordinate(targetX, targetY);
+        String wktPoint = writer.write(geometryFactory.createPoint(coordinate));
+        return oneRoomRepository.findRoomsWithinDistance(wktPoint, distance);
+    }
+
+    //모든 룸의 cost_divided_size의 크기가 하위 몇 %인지 계산해서 db에 저장
+    public String calculateAllRoomsCostDividedSizeRank() {
+        List<OneRoom> allRooms = oneRoomRepository.findAll();
+        allRooms.sort(Comparator.comparing(OneRoom::getCost_divided_size));
+        for (int i = 0; i < allRooms.size(); i++) {
+            OneRoom room = allRooms.get(i);
+            room.setCostPercent(((double)i / allRooms.size()) * 100);
+        }
+        oneRoomRepository.saveAll(allRooms);
+        return "calculateAllRoomsCostDividedSizeRank Success";
+    }
+
+    //input : 하나의 oneRoom, distance
+    //그 룸의 좌표를 가지고 주위 distance 미터 만큼의 oneRooms의 cost_divided_size의 크기가 하위 몇 %인지 계산
+    public Double getCostDividedSizeRank(OneRoom oneRoom, Double distance) {
+        List<OneRoom> roomsWithinDistance = getRoomsWithinDistance(oneRoom.getX(), oneRoom.getY(), distance);
+        log.info("roomsWithinDistance : {}", roomsWithinDistance.size());
+
+        roomsWithinDistance.sort(Comparator.comparing(OneRoom::getCost_divided_size));
+        System.out.println("roomsWithinDistance = " + roomsWithinDistance);
+        int rank = 0;
+        for (OneRoom room : roomsWithinDistance) {
+            if (room.getId().equals(oneRoom.getId())) {
+                break;
+            }
+            rank++;
+        }
+        return ((double)rank / roomsWithinDistance.size() )*100;
+    }
+
+
 
 }

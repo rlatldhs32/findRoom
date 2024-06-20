@@ -1,5 +1,6 @@
 package sion.bestRoom.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import sion.bestRoom.feign.dto.zigbang.ZigbangItemDetailDTO;
 import sion.bestRoom.feign.response.ZigbangResponse;
 import sion.bestRoom.model.OneRoom;
 import sion.bestRoom.repository.OneRoomRepository;
+import sion.bestRoom.util.CalculateUtil;
 import sion.bestRoom.util.Constants;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
+@Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -68,6 +71,8 @@ public class ZigbangService {
                 manage_cost = Double.parseDouble(zigbangItemDetailDTO.getManage_cost());
             }
 
+            Double cost_divided_size = ((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent() + manage_cost)/zigbangItemDetailDTO.getSize_m2();
+
             OneRoom oneRoom = OneRoom.builder()
                     .title(zigbangItemDetailDTO.getTitle())
                     .zigbang_id(zigbangItemDetailDTO.getItem_id())
@@ -84,6 +89,8 @@ public class ZigbangService {
                     .selling_type(selling_type)
                     .selling_type_str(zigbangItemDetailDTO.getSales_type())
                     .code("zigbang")
+                    .location(CalculateUtil.calculatePoint(zigbangItemDetailDTO.getLocation().getLng(), zigbangItemDetailDTO.getLocation().getLat()))
+                    .cost_divided_size(cost_divided_size)
                     .build();
             oneRooms.add(oneRoom);
         }
