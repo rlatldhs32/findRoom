@@ -13,8 +13,8 @@ import sion.bestRoom.util.Constants;
 
 import java.util.List;
 
-import static java.lang.Thread.sleep;
 
+@Transactional
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/save")
@@ -79,8 +79,6 @@ public class SaveController {
         Constants.checkBusList = true;
         busService.deleteAllBus();
         return busService.saveBusByFeignClient();
-//        List<String> busNameList = busService.saveBus(dto);
-//        return busNameList;
     }
 
     @Operation(summary = "직방에 있는 빌라 가져오기. ( 약 2만개 )")

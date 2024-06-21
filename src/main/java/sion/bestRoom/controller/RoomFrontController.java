@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import sion.bestRoom.dto.DabangRoomDTO;
+import sion.bestRoom.dto.RoomDTO;
 import sion.bestRoom.dto.ShowDabang;
-import sion.bestRoom.model.OneRoom;
 import sion.bestRoom.service.RoomService;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class RoomFrontController {
 
     @GetMapping("/good/effective")
     public String  getEffectiveRooms(Model model) { //sungName 우선
-        List<OneRoom> dabangRooms = roomService.getTop10CostEffectivenessRooms();
+        List<RoomDTO> dabangRooms = roomService.getTop10CostEffectivenessRooms();
         List<ShowDabang> showDabangs = convertToShowDabang(dabangRooms);
         model.addAttribute("dabangRooms", showDabangs);
         return "dabangTest";
@@ -30,16 +29,16 @@ public class RoomFrontController {
 
     @GetMapping("/good/effective/exceptBack")
     public String  getEffectiveRoomsexceptBack(Model model) { //sungName 우선
-        List<OneRoom> bestTopRooms = roomService.getBestTopRooms(126.93, 127.2, 37.412603, 37.5171, 20, 0,0D);
+        List<RoomDTO> bestTopRooms = roomService.getBestTopRooms(126.93, 127.2, 37.412603, 37.5171, 20, 0,0D);
         List<ShowDabang> showDabangs = convertToShowDabang(bestTopRooms);
         model.addAttribute("dabangRooms", showDabangs);
         return "dabangTest";
     }
 
 
-    private List<ShowDabang> convertToShowDabang(List<OneRoom> dabangRooms) {
+    private List<ShowDabang> convertToShowDabang(List<RoomDTO> dabangRooms) {
         List<ShowDabang> showDabangs = new ArrayList<>();
-        for (OneRoom dabangRoom : dabangRooms) {
+        for (RoomDTO dabangRoom : dabangRooms) {
             String redirectUrl = "";
             String imageUrl = dabangRoom.getImg_url();
             if(dabangRoom.getZigbang_id()!=null)

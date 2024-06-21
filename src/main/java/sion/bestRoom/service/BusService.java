@@ -1,15 +1,13 @@
 package sion.bestRoom.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.CreateBusDTO;
-import sion.bestRoom.dto.CreateSubwayDTO;
 import sion.bestRoom.feign.BusFeignClient;
 import sion.bestRoom.model.Bus;
-import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.BusRepository;
-import sion.bestRoom.repository.SubwayRepository;
 import sion.bestRoom.util.CalculateUtil;
 
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class BusService {
 
     private final BusRepository busRepository;

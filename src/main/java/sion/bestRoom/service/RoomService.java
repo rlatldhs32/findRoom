@@ -5,21 +5,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTWriter;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
+import sion.bestRoom.dto.RoomDTO;
 import sion.bestRoom.feign.DabangFeignClient;
 import sion.bestRoom.feign.dto.CityDTO;
 import sion.bestRoom.feign.response.DabangCityResponse;
 import sion.bestRoom.feign.response.DabangResponse;
 import sion.bestRoom.model.City;
 import sion.bestRoom.model.OneRoom;
-import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.CityRepository;
 import sion.bestRoom.repository.OneRoomRepository;
 import sion.bestRoom.util.CalculateUtil;
 import sion.bestRoom.util.Constants;
+import sion.bestRoom.util.RoomConverter;
 
 import java.util.*;
 
@@ -140,8 +140,8 @@ public class RoomService {
 
     }
 
-    public List<OneRoom> getAllRooms(Double x1, Double x2, Double y1, Double y2, Integer type) {
-        List<OneRoom> oneRoomList;
+    public List<RoomDTO> getAllRooms(Double x1, Double x2, Double y1, Double y2, Integer type) {
+        List<RoomDTO> oneRoomList;
         if(type==null)
             oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
         else
@@ -149,8 +149,9 @@ public class RoomService {
         return oneRoomList;
     }
 
-    public List<OneRoom> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number,Integer type,Double minSize) {
-        List<OneRoom> oneRoomList;
+
+    public List<RoomDTO> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number, Integer type, Double minSize) {
+        List<RoomDTO> oneRoomList;
         if(type==null)
             oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,minSize);
         else
@@ -163,6 +164,7 @@ public class RoomService {
 
         return oneRoomList;
     }
+
 
     public List<City> getGeongGiAndSeoulAreaCode() {
         DabangCityResponse geongGiNorthCity = dabangFeignClient.getGeongGiNorthCity();
@@ -252,14 +254,20 @@ public class RoomService {
 
 
 
-    public List<OneRoom> getTop10CostEffectivenessRooms() {
+    public List<RoomDTO> getTop10CostEffectivenessRooms() {
         List<OneRoom> allRooms = oneRoomRepository.findAll();
-        allRooms.sort((o1, o2) -> {
+        List<RoomDTO> roomDTOList = new ArrayList<>();
+        //convert allRooms to roomDTOList
+        for (OneRoom room : allRooms) {
+            RoomDTO dto = RoomConverter.toDTO(room);
+            roomDTOList.add(dto);
+        }
+        roomDTOList.sort((o1, o2) -> {
             Double costEffectiveness1 = o1.getTotal_price() / o1.getSize();
             Double costEffectiveness2 = o2.getTotal_price() / o2.getSize();
             return costEffectiveness1.compareTo(costEffectiveness2);
         });
-        return allRooms.subList(0, 10);
+        return roomDTOList.subList(0, 10);
     }
 
     //각 룸별로, 가장 가까운 subWay와의 거리를 room Entity의 subWayDistance에  저장

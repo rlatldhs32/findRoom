@@ -1,5 +1,6 @@
 package sion.bestRoom.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import sion.bestRoom.util.CalculateUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
