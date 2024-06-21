@@ -42,12 +42,18 @@ public class OneRoom{
 
     private Double cost_divided_size_percent;
 
+    //지하철역까지의 거리
+    private Double subway_distance;
+
     @Column(columnDefinition = "POINT")
     private Point location;
 
 
     public void setCostPercent(Double percent) {
         this.cost_divided_size_percent = percent;
+    }
+    public void setSubway_distance(Double distance) {
+        this.subway_distance = distance;
     }
 }
 

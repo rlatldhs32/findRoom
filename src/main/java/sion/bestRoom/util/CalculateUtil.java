@@ -29,4 +29,23 @@ public class CalculateUtil {
         return geometryFactory.createPoint(coordinate);
     }
 
+
+    public static double calculateDistance(Point point1, Point point2) {
+        double lat1 = point1.getY();
+        double lon1 = point1.getX();
+        double lat2 = point2.getY();
+        double lon2 = point2.getX();
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS * c; // 결과를 미터 단위로 반환
+    }
+
 }

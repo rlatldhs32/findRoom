@@ -310,5 +310,15 @@ public class RoomService {
     }
 
 
-
+    //모든 룸별로 가장 가까운 지하철역까지의 거리를 계산해서 db에 저장
+    public String calculateAllRoomsSubwayDistance() {
+        List<OneRoom> allRooms = oneRoomRepository.findAll();
+        for (OneRoom room : allRooms) {
+            //가까운 subWay 찾고, 그 location까지의 거리 계산
+            Double nearbySubwayDistance = subwayService.getNearbySubwayDistance(room.getX(), room.getY());
+            room.setSubway_distance(nearbySubwayDistance);
+        }
+//        oneRoomRepository.saveAll(allRooms);
+        return "calculateAllRoomsCostDividedSizeRank Success";
+    }
 }

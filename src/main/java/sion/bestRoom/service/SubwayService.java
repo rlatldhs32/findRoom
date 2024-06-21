@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.CreateSubwayDTO;
+import sion.bestRoom.model.OneRoom;
 import sion.bestRoom.model.Subway;
 import sion.bestRoom.repository.SubwayRepository;
 import sion.bestRoom.util.CalculateUtil;
@@ -45,5 +46,9 @@ public class SubwayService {
 
     public List<Subway> getSubwayList() {
         return subwayRepository.findAll();
+    }
+
+    public Double getNearbySubwayDistance(Double x, Double y) {
+        return subwayRepository.findClosestSubwayWithDistance(x, y).getDistance();
     }
 }

@@ -57,6 +57,13 @@ public class RoomController {
         return "calculateCostSizeRank Success";
     }
 
+    @Operation(summary = "가장 가까운 subWay까지의 거리 계산해서 저장. 현재 5만 룸, 800 지하철 30분걸림,,, 바꿔야할듯")
+    @PostMapping("/calulate/subway/distance")
+    public String calculateSubwayDistance() {
+        roomService.calculateAllRoomsSubwayDistance();
+        return "calculateSubwayDistance Success";
+    }
+
 
 
 }
