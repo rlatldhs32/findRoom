@@ -12,7 +12,7 @@ services:
       - sionwork
 
   spring:
-    image: your_spring_image
+    image: springboot-sion
     container_name: spring
     depends_on:
       - mariadb
@@ -24,5 +24,5 @@ services:
       - sionwork
 
 networks:
-  backend:
+  sionwork:
     driver: bridge
