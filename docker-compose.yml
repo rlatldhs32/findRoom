@@ -1,0 +1,28 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=newSion
+    networks:
+      - sionwork
+
+  spring:
+    image: your_spring_image
+    container_name: spring
+    depends_on:
+      - mariadb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/newSion
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - sionwork
+
+networks:
+  backend:
+    driver: bridge
