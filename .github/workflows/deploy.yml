@@ -34,7 +34,7 @@ jobs:
 
       # docker image 빌드
       - name: Build docker image
-        run: docker build -t sion/findRoom .
+        run: docker build -t sion/findroom .
 
       # docker hub 로그인
       - name: Login docker hub
@@ -45,7 +45,7 @@ jobs:
 
       # docker hub 퍼블리시
       - name: Publish to docker hub
-        run: docker push sion/findRoom
+        run: docker push sion/findroom
 
       # WAS 인스턴스 접속 & 애플리케이션 실행
       - name: Connect to WAS & Execute Application
@@ -58,8 +58,8 @@ jobs:
           script: |
             docker stop $(docker ps -a -q) 
             docker rm $(docker ps -a -q) 
-            docker pull sion/findRoom
-            docker run -d -p 8181:8181 --name findRoomContainer --network sionwork sion/findRoom
+            docker pull sion/findroom
+            docker run -d -p 8181:8181 --name findroomcon --network sionwork sion/findroom
 
 
 
