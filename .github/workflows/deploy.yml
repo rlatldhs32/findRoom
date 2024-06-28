@@ -1,5 +1,5 @@
 # 워크 플로우 이름
-name: Java CI with Gradle 
+name: Java CI with Gradle
 
 
 # 워크 플로우가 언제 실행 될지를 정한다.
@@ -48,24 +48,24 @@ jobs:
         run: docker push  rlatldhs12513/findroom
 
       # WAS 인스턴스 접속 & 애플리케이션 실행
-     - name: Connect to WAS & Execute Application
+      - name: Connect to WAS & Execute Application
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # MariaDB 컨테이너 이름 확인 (예: mariadb-container)
+#             MariaDB 컨테이너 이름 확인 (예: mariadb-container)
             MARIADB_CONTAINER=$(docker ps -aqf "name=mariadb")
-            
-            # Spring 애플리케이션 컨테이너 중지 및 제거
+              
+#             Spring 애플리케이션 컨테이너 중지 및 제거
             docker stop $(docker ps -aqf "name=findroomcon")
             docker rm $(docker ps -aqf "name=findroomcon")
-            
-            # 새 Spring 애플리케이션 이미지 pull
+              
+#             새 Spring 애플리케이션 이미지 pull
             docker pull rlatldhs12513/findroom
-            
-            # MariaDB 컨테이너가 실행 중인지 확인하고, 없으면 시작
+              
+#             MariaDB 컨테이너가 실행 중인지 확인하고, 없으면 시작
             if [ -z "$MARIADB_CONTAINER" ] || [ -z "$(docker ps -qf "name=mariadb")" ]; then
               echo "MariaDB container not found or not running. Starting a new one..."
               docker run -d --name mariadb-container --network sionwork \
