@@ -64,11 +64,16 @@ jobs:
               
             if [ -z "$MARIADB_CONTAINER" ] || [ -z "$(docker ps -qf "name=mariadb")" ]; then
               echo "MariaDB container not found or not running. Starting a new one..."
-              docker run -d --name mariadb-container --network sionwork \
+              docker run -d --name mariadb --network sionwork \
                 -e MYSQL_ROOT_PASSWORD=root \
                 -e MYSQL_DATABASE=newSion \
                 -v mariadb_data:/var/lib/mysql \
                 mariadb:latest
+                echo "Waiting for MariaDB to be ready..."
+                while ! docker exec mariadb mysqladmin --user=root --password=root ping --silent &> /dev/null; do
+                sleep 1
+                done
+                echo "End for MariaDB Ready."
             fi
             
             docker run -d --name findroomcon --network sionwork \
