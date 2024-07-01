@@ -69,11 +69,6 @@ jobs:
                 -e MYSQL_DATABASE=newSion \
                 -v mariadb_data:/var/lib/mysql \
                 mariadb:latest
-                echo "Waiting for MariaDB to be ready..."
-                while ! docker exec mariadb mysqladmin --user=root --password=root ping --silent &> /dev/null; do
-                sleep 1
-                done
-                echo "End for MariaDB Ready."
             fi
             
             docker run -d --name findroomcon --network sionwork \
