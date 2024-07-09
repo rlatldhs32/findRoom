@@ -141,6 +141,16 @@ public class RoomService {
     }
 
     public List<RoomDTO> getAllRooms(Double x1, Double x2, Double y1, Double y2, Integer type) {
+        if(x1>x2){
+            Double temp = x1;
+            x1 = x2;
+            x2 = temp;
+        }
+        if(y1>y2){
+            Double temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
         List<RoomDTO> oneRoomList;
         if(type==null)
             oneRoomList = oneRoomRepository.findBetweenXAndY(x1, x2, y1, y2);
@@ -152,6 +162,16 @@ public class RoomService {
 
     public List<RoomDTO> getBestTopRooms(Double x1, Double x2, Double y1, Double y2, Integer number, Integer type, Double minSize) {
         List<RoomDTO> oneRoomList;
+        if(x1>x2){
+            Double temp = x1;
+            x1 = x2;
+            x2 = temp;
+        }
+        if(y1>y2){
+            Double temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
         if(type==null)
             oneRoomList = oneRoomRepository.findBetweenXAndYOrderByTotalPriceDividedBySizeDescLimit(x1, x2, y1, y2,number,minSize);
         else
