@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@Document(indexName = "one_room")
 @Getter
 public class OneRoom{
     @Id

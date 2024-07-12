@@ -90,16 +90,7 @@
 //    @Test
 //    @DisplayName("랭킹찾기 테스트")
 //    public void testRank(){
-//        // given
-//        Optional<OneRoom> byId = oneRoomRepository.findById(413249L);
-//        OneRoom oneRoom = byId.get();
-//        // when
-////        Double costDividedSizeRank = roomService.getCostDividedSizeRank(oneRoom, 2000);
-////
-////        System.out.println("costDividedSizeRank = " + costDividedSizeRank);
-////
-////         then
-////        Assertions.assertThat(costDividedSizeRank).isNotNull();
+//
 //    }
 //
 //}

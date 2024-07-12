@@ -16,6 +16,11 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+  elasticsearch:
+    username: elastic
+    password: root
+    uris: http://localhost:9200
+
 
   thymeleaf:
     cache: false
