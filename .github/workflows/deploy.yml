@@ -67,7 +67,7 @@ jobs:
               docker run -d --name mariadb --network sionwork \
                 -e MYSQL_ROOT_PASSWORD=tldhschlrh1523 \
                 -e MYSQL_DATABASE=findRoom \
-                -v mariadb_data:/var/lib/mysql \
+                -v mariadb_data:/var/lib/mysql/new \
                 -p 3306:3306 \
                 mariadb:latest
             fi
