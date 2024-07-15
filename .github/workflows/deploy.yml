@@ -65,15 +65,15 @@ jobs:
             if [ -z "$MARIADB_CONTAINER" ] || [ -z "$(docker ps -qf "name=mariadb")" ]; then
               echo "MariaDB container not found or not running. Starting a new one..."
               docker run -d --name mariadb --network sionwork \
-                -e MYSQL_ROOT_PASSWORD=root \
-                -e MYSQL_DATABASE=newSion \
+                -e MYSQL_ROOT_PASSWORD=tldhschlrh1523 \
+                -e MYSQL_DATABASE=findRoom \
                 -v mariadb_data:/var/lib/mysql \
                 mariadb:latest
             fi
             
             docker run -d --name findroomcon --network sionwork \
-              -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/newSion \
-              -e SPRING_DATASOURCE_USERNAME=root \
-              -e SPRING_DATASOURCE_PASSWORD=root \
+              -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/findRoom \
+              -e SPRING_DATASOURCE_USERNAME=sion \
+              -e SPRING_DATASOURCE_PASSWORD=tldhschlrh1523 \
               -p 8181:8181 \
               rlatldhs12513/findroom

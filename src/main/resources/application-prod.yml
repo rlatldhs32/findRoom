@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mariadb://mariadb:3306/newSion
-    username: root
-    password: root
+    url: jdbc:mariadb://mariadb:3306/findRoom
+    username: findRoom
+    password: tldhschlrh1523
   devtools:
     livereload:
       enabled: true

@@ -6,8 +6,8 @@ services:
     ports:
       - "3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=newSion
+      - MYSQL_ROOT_PASSWORD=sion
+      - MYSQL_DATABASE=findRoom
     networks:
       - sionwork
 
@@ -17,9 +17,9 @@ services:
     depends_on:
       - mariadb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/newSion
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/findRoom
+      SPRING_DATASOURCE_USERNAME: sion
+      SPRING_DATASOURCE_PASSWORD: tldhschlrh1523
     networks:
       - sionwork
 
