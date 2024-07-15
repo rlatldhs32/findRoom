@@ -68,6 +68,7 @@ jobs:
                 -e MYSQL_ROOT_PASSWORD=tldhschlrh1523 \
                 -e MYSQL_DATABASE=findRoom \
                 -v mariadb_data:/var/lib/mysql \
+                -p 3306:3306 \
                 mariadb:latest
             fi
             
