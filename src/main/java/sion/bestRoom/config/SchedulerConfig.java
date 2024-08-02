@@ -1,5 +1,6 @@
 package sion.bestRoom.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -62,8 +63,8 @@ public class SchedulerConfig {
             roomService.getGeongGiAndSeoulAreaCode();
             zigbangService.getZigbangRooms();
             try {
-                roomService.getDabangRoomsInCity();
-            } catch (InterruptedException e) {
+                roomService.getAllDabangRoomsInCity();
+            } catch (InterruptedException | JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         };

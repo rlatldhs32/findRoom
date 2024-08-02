@@ -11,6 +11,23 @@ spring:
       ddl-auto: update
       dialect: org.hibernate.dialect.MariaDBDialect
       database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+      jdbc:
+        batch_size: 1000
+        order_inserts: true
       spatial:
         enabled: true
     show-sql: true
+
+
+logging:
+  level:
+    sion:
+      bestRoom:
+        feign:
+          DabangFeignClient: DEBUG
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL

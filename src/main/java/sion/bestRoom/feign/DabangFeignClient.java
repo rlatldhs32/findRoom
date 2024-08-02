@@ -1,15 +1,16 @@
 package sion.bestRoom.feign;
 
+import feign.Headers;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import sion.bestRoom.feign.response.DabangCityResponse;
-import sion.bestRoom.feign.response.DabangResponse;
-import sion.bestRoom.feign.response.DabangV5Response;
-import sion.bestRoom.feign.response.NaverResponse;
+import sion.bestRoom.config.FeignLogConfiguration;
+import sion.bestRoom.feign.response.*;
 
-@FeignClient(name = "dabangEstate", url = "https://www.dabangapp.com/api")
+@FeignClient(name = "dabangEstate", url = "https://www.dabangapp.com/api",configuration = FeignLogConfiguration.class)
+//@FeignClient(name = "dabangEstate")
 public interface DabangFeignClient {
 
     @Cacheable("DABANG_ESTATE")
@@ -62,15 +63,51 @@ public interface DabangFeignClient {
 
 
     //officetel 갖고오기. V5
-    @GetMapping(value="/v5/room-list/category/officetel/region?filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22useApprovalDateRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22parkingNumRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%7D&useMap=naver&zoom=13"
+    @GetMapping(
+            value="/v5/room-list/category/officetel/region?filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22useApprovalDateRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22parkingNumRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%7D&useMap=naver&zoom=13"
             ,produces = "application/json")
-    DabangV5Response getOfficeRoomInCityV5(@RequestParam("code") String code, @RequestParam("page")Long page);
+    DabangV5Response<DabangV5Result> getOfficeRoomInCityV5(
+            @RequestHeader("D-Call-Type") String dCallType,
+            @RequestHeader("D-Api-Version") String dApiVersion,
+            @RequestParam("code") String code, @RequestParam("page")Long page);
 
 
-    @GetMapping(value="https://www.dabangapp.com/api/v5/room-list/category/one-two/region?filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%5D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22roomFloorList%22%3A%5B%22GROUND_FIRST%22%2C%22GROUND_SECOND_OVER%22%2C%22SEMI_BASEMENT%22%2C%22ROOFTOP%22%5D%2C%22roomTypeList%22%3A%5B%22ONE_ROOM%22%2C%22TWO_ROOM%22%5D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%2C%22isDivision%22%3Afalse%2C%22isDuplex%22%3Afalse%7D&useMap=naver&zoom=13"
+
+    @GetMapping(
+            value="/v5/room-list/category/one-two/region?filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%5D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22roomFloorList%22%3A%5B%22GROUND_FIRST%22%2C%22GROUND_SECOND_OVER%22%2C%22SEMI_BASEMENT%22%2C%22ROOFTOP%22%5D%2C%22roomTypeList%22%3A%5B%22ONE_ROOM%22%2C%22TWO_ROOM%22%5D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%2C%22isDivision%22%3Afalse%2C%22isDuplex%22%3Afalse%7D&useMap=naver&zoom=13"
             ,produces = "application/json")
-    DabangV5Response getOneTwoRoomInCityV5(@RequestParam("code") String code, @RequestParam("page")Long page);
+    DabangV5Response<DabangV5Result> getOneTwoRoomInCityV5(
+            @RequestHeader("D-Call-Type") String dCallType,
+            @RequestHeader("D-Api-Version") String dApiVersion,
+            @RequestParam("code") String code, @RequestParam("page")Long page);
 
+    @GetMapping(value="/v5/room-list/category/house-villa/region?filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22roomFloorList%22%3A%5B%22GROUND_FIRST%22%2C%22GROUND_SECOND_OVER%22%2C%22SEMI_BASEMENT%22%2C%22ROOFTOP%22%5D%2C%22roomTypeList%22%3A%5B%22ONE_ROOM%22%2C%22TWO_ROOM%22%5D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%2C%22isDivision%22%3Afalse%2C%22isDuplex%22%3Afalse%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%7D&useMap=naver&zoom=13",
+            produces = "application/json")
+    DabangV5Response<DabangV5Result> getVillaRoomInCityV5(
+            @RequestHeader("D-Call-Type") String dCallType,
+            @RequestHeader("D-Api-Version") String dApiVersion,
+            @RequestParam("code") String code, @RequestParam("page")Long page);
+
+    //아파트 전체 ㅋㅋ
+    @GetMapping(value="/v5/room-list/category/apt/bbox?bbox=%7B%22sw%22%3A%7B%22lat%22%3A37%2C%22lng%22%3A126%7D%2C%22ne%22%3A%7B%22lat%22%3A37.7%2C%22lng%22%3A128%7D%7D&filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22useApprovalDateRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22householdNumRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22parkingNumRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isShortLease%22%3Afalse%2C%22hasTakeTenant%22%3Afalse%7D&useMap=naver&zoom=13",
+            produces = "application/json")
+    DabangV5Response<DabangV5Result> getApartmentRoomInCityV5(
+            @RequestHeader("D-Call-Type") String dCallType,
+            @RequestHeader("D-Api-Version") String dApiVersion,
+            @RequestParam("page")Long page);
+
+
+
+    @GetMapping(value = "/v5/room-list/category/apt/bbox", produces = "application/json")
+    DabangV5Response<DabangV5Result> getApartmentRoomInCityV6(
+            @RequestHeader("D-Call-Type") String dCallType,
+            @RequestHeader("D-Api-Version") String dApiVersion,
+            @RequestParam("bbox") String bbox,
+            @RequestParam("filters") String filters,
+            @RequestParam("useMap") String useMap,
+            @RequestParam("zoom") int zoom,
+            @RequestParam("page") Long page
+    );
 
 
 //    one-two 되는 거 :
@@ -79,10 +116,9 @@ public interface DabangFeignClient {
 //
 //    officetel 되는거 :
 //    https://www.dabangapp.com/api/v5/room-list/category/officetel/region?code=11680103&filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22useApprovalDateRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22parkingNumRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%7D&page=1&useMap=naver&zoom=13
-//
+
 //    빌라 되는거 :
-//    https://www.dabangapp.com/api/v5/room-list/category/house-villa/region?
-//    code=11680103&filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22roomFloorList%22%3A%5B%22GROUND_FIRST%22%2C%22GROUND_SECOND_OVER%22%2C%22SEMI_BASEMENT%22%2C%22ROOFTOP%22%5D%2C%22roomTypeList%22%3A%5B%22ONE_ROOM%22%2C%22TWO_ROOM%22%5D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%2C%22isDivision%22%3Afalse%2C%22isDuplex%22%3Afalse%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%7D&page=1&useMap=naver&zoom=13
+//    https://www.dabangapp.com/api/v5/room-list/category/house-villa/region?code=11680103&filters=%7B%22sellingTypeList%22%3A%5B%22MONTHLY_RENT%22%2C%22LEASE%22%2C%22SELL%22%5D%2C%22depositRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22priceRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22isIncludeMaintenance%22%3Afalse%2C%22pyeongRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%2C%22roomFloorList%22%3A%5B%22GROUND_FIRST%22%2C%22GROUND_SECOND_OVER%22%2C%22SEMI_BASEMENT%22%2C%22ROOFTOP%22%5D%2C%22roomTypeList%22%3A%5B%22ONE_ROOM%22%2C%22TWO_ROOM%22%5D%2C%22dealTypeList%22%3A%5B%22AGENT%22%2C%22DIRECT%22%5D%2C%22canParking%22%3Afalse%2C%22isShortLease%22%3Afalse%2C%22hasElevator%22%3Afalse%2C%22hasPano%22%3Afalse%2C%22isDivision%22%3Afalse%2C%22isDuplex%22%3Afalse%2C%22tradeRange%22%3A%7B%22min%22%3A0%2C%22max%22%3A999999%7D%7D&page=1&useMap=naver&zoom=13
 //
 //
 //    apt 되는거 :

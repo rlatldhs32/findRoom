@@ -27,13 +27,13 @@ public class RoomFrontController {
         return "dabangTest";
     }
 
-    @GetMapping("/good/effective/exceptBack")
-    public String  getEffectiveRoomsexceptBack(Model model) { //sungName 우선
-        List<RoomDTO> bestTopRooms = roomService.getBestTopRooms(126.93, 127.2, 37.412603, 37.5171, 20, 0,0D);
-        List<ShowDabang> showDabangs = convertToShowDabang(bestTopRooms);
-        model.addAttribute("dabangRooms", showDabangs);
-        return "dabangTest";
-    }
+//    @GetMapping("/good/effective/exceptBack")
+//    public String  getEffectiveRoomsexceptBack(Model model) { //sungName 우선
+//        List<RoomDTO> bestTopRooms = roomService.getBestTopRooms(126.93, 127.2, 37.412603, 37.5171, 20, 0,);
+//        List<ShowDabang> showDabangs = convertToShowDabang(bestTopRooms);
+//        model.addAttribute("dabangRooms", showDabangs);
+//        return "dabangTest";
+//    }
 
 
     private List<ShowDabang> convertToShowDabang(List<RoomDTO> dabangRooms) {

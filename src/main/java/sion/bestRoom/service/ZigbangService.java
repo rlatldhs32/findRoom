@@ -30,6 +30,7 @@ public class ZigbangService {
 
     private final OneRoomRepository oneRoomRepository;
 
+    @Transactional(dontRollbackOn = Exception.class)
     public String getZigbangRooms() {
         ZigbangResponse res = zigbangFeignClient.getVilla("wyd");
         List<ZigbangItemDTO> items = res.getItems();
@@ -73,9 +74,23 @@ public class ZigbangService {
 
             Double cost_divided_size = ((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent() + manage_cost)/zigbangItemDetailDTO.getSize_m2();
 
+            Long roomType = 0L;
+            if(zigbangItemDetailDTO.getService_type().startsWith("투"))
+                roomType = 1L;
+            else if(zigbangItemDetailDTO.getService_type().startsWith("쓰"))
+                roomType = 2L;
+            else if(zigbangItemDetailDTO.getService_type().startsWith("오"))
+                roomType = 3L;
+            else if(zigbangItemDetailDTO.getService_type().startsWith("빌")) // << 직방이네
+                roomType = 4L;
+            else if(zigbangItemDetailDTO.getService_type().startsWith("아"))
+                roomType = 5L;
+            else roomType = 0L;
+
             OneRoom oneRoom = OneRoom.builder()
                     .title(zigbangItemDetailDTO.getTitle())
                     .zigbang_id(zigbangItemDetailDTO.getItem_id())
+                    .room_type(roomType)
                     .room_type_str(zigbangItemDetailDTO.getService_type())
                     .maintenance_fee(manage_cost)
                     .floor(zigbangItemDetailDTO.getFloor())

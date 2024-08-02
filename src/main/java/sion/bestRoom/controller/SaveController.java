@@ -1,5 +1,6 @@
 package sion.bestRoom.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,42 @@ public class SaveController {
 
     @Operation(summary = "직방+다방 방 정보 저장하기. 처음에 수행하면 됨.")
     @GetMapping("/all/rooms")
-    public List<String> getZigAndDabangRooms() throws InterruptedException {
+    public List<String> getZigAndDabangRooms() throws InterruptedException, JsonProcessingException {
         if(Constants.checkRoomList)
             throw new RuntimeException("이미 방 정보를 가져왔습니다.");
         Constants.checkRoomList = true;
         roomService.deleteAllRooms();
         cityService.deleteAllCities();
         List<City> areaCode = roomService.getGeongGiAndSeoulAreaCode();
-        List<String> allRoomsInCity = roomService.getDabangRoomsInCity();
+//        List<String> allRoomsInCity = roomService.getDabangRoomsInCity();
+        List<String> allRoomsInCity = roomService.getAllDabangRoomsInCity();
         String zigbangRooms = zigbangService.getZigbangRooms();
         return allRoomsInCity;
     }
+
+//    @Transactional(dontRollbackOn = Exception.class)
+//    @Operation(summary = "직방+다방 방 정보 저장하기. 처음에 수행하면 됨.- 오피스텔 버전")
+//    @GetMapping("/all/rooms/officetel")
+//    public List<String> getZigAndDabangRoomsOffice() throws InterruptedException, JsonProcessingException {
+////        if(Constants.checkRoomList)
+////            throw new RuntimeException("이미 방 정보를 가져왔습니다.");
+//        try {
+////        Constants.checkRoomList = true;
+//            roomService.deleteAllRooms();
+////        cityService.deleteAllCities();
+////        List<City> areaCode = roomService.getGeongGiAndSeoulAreaCode();
+//            List<String> allRoomsInCity = roomService.getAllDabangRoomsInCity();
+//            log.info("Zigbang start");
+//        String zigbangRooms = zigbangService.getZigbangRooms();
+////        log.info("Zigbang End");
+//        }
+//        catch (Exception e) {
+//            log.error("error : " + e.getMessage());
+//        }
+//
+//        return new ArrayList<>();
+//    }
+
 
     @Operation(summary = "수도권 내 구역 code 가져오기 . dabang 룸 저장 전에 시행.")
     @GetMapping("/dabang/area")
