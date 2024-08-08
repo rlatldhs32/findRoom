@@ -9,6 +9,7 @@ import org.locationtech.jts.io.WKTWriter;
 import org.springframework.stereotype.Service;
 import sion.bestRoom.dto.DabangRoomDTO;
 import sion.bestRoom.dto.RoomDTO;
+import sion.bestRoom.elasticsearch.OneRoomSearchRepository;
 import sion.bestRoom.feign.DabangFeignClient;
 import sion.bestRoom.feign.dto.CityDTO;
 import sion.bestRoom.feign.response.DabangCityResponse;
@@ -35,6 +36,13 @@ public class RoomService {
     private final OneRoomRepository oneRoomRepository;
     private final CityRepository cityRepository;
     private final SubwayService subwayService;
+
+    private OneRoomSearchRepository oneRoomSearchRepository;
+
+    @Transactional
+    public void saveOneRoomListElasticsearch(List<OneRoom> oneRoomList) {
+        oneRoomSearchRepository.saveAll(oneRoomList);
+    }
 
     private List<OneRoom> convertDabangDtoToOneRoom(List<DabangRoomDTO> rooms,String code) {
         //convert DabangRoomDTO to OneRoomList
