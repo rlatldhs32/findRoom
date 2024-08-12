@@ -66,7 +66,7 @@ public class OneRoomQdslImpl implements OneRoomQdsl{
                         sellingTypeEq(sellingType),
                         roomTypeEq(roomType)
                 )
-                .orderBy(oneRoom.total_price.divide(oneRoom.size).asc())
+                .orderBy(oneRoom.cost_divided_size.asc())
                 .limit(limit)
                 .fetch();
     }
