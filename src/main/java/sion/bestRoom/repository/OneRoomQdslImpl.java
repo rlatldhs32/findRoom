@@ -62,9 +62,9 @@ public class OneRoomQdslImpl implements OneRoomQdsl{
                 .where(
                         oneRoom.x.between(x1, x2),
                         oneRoom.y.between(y1, y2),
-                        oneRoom.size.goe(minSize),
                         sellingTypeEq(sellingType),
-                        roomTypeEq(roomType)
+                        roomTypeEq(roomType),
+                        oneRoom.size.goe(minSize)
                 )
                 .orderBy(oneRoom.cost_divided_size.asc())
                 .limit(limit)
