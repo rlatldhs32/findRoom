@@ -239,17 +239,16 @@ public class RoomService {
             //5 : 아 로 시작
 
             Long roomType = 0L;
-            if(room.getRoomTypeName().startsWith("투"))
+//            if(room.getRoomTypeName().startsWith("투"))
+//                roomType = 1L;
+//            else if(room.getRoomTypeName().startsWith("쓰"))
+//                roomType = 2L;
+            if(room.getRoomTypeName().startsWith("오"))
                 roomType = 1L;
-            else if(room.getRoomTypeName().startsWith("쓰"))
-                roomType = 2L;
-            else if(room.getRoomTypeName().startsWith("오"))
-                roomType = 3L;
-            else if(room.getRoomTypeName().startsWith("빌")) // << 직방이네
-                roomType = 4L;
+//            else if(room.getRoomTypeName().startsWith("빌")) // << 직방이네
+//                roomType = 4L;
             else if(room.getRoomTypeName().startsWith("아"))
-                roomType = 5L;
-            else roomType = 0L;
+                roomType = 2L;
 
 
 

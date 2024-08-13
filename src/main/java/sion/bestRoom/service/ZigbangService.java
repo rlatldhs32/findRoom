@@ -75,17 +75,17 @@ public class ZigbangService {
             Double cost_divided_size = ((zigbangItemDetailDTO.getDeposit() * Constants.ConvertPercent) / 12 + zigbangItemDetailDTO.getRent() + manage_cost)/zigbangItemDetailDTO.getSize_m2();
 
             Long roomType = 0L;
-            if(zigbangItemDetailDTO.getService_type().startsWith("투"))
+//            if(zigbangItemDetailDTO.getService_type().startsWith("투"))
+//                roomType = 1L;
+//            else if(zigbangItemDetailDTO.getService_type().startsWith("쓰"))
+//                roomType = 2L;
+            if(zigbangItemDetailDTO.getService_type().startsWith("오"))
                 roomType = 1L;
-            else if(zigbangItemDetailDTO.getService_type().startsWith("쓰"))
-                roomType = 2L;
-            else if(zigbangItemDetailDTO.getService_type().startsWith("오"))
-                roomType = 3L;
-            else if(zigbangItemDetailDTO.getService_type().startsWith("빌")) // << 직방이네
-                roomType = 4L;
+//            else if(zigbangItemDetailDTO.getService_type().startsWith("빌")) // << 직방이네
+//                roomType = 4L;
             else if(zigbangItemDetailDTO.getService_type().startsWith("아"))
-                roomType = 5L;
-            else roomType = 0L;
+                roomType = 2L;
+//            else roomType = 0L;
 
             OneRoom oneRoom = OneRoom.builder()
                     .title(zigbangItemDetailDTO.getTitle())
