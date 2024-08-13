@@ -27,7 +27,7 @@ public class RoomController {
     @GetMapping("")
     public List<RoomDTO>  getAllRooms(
                                       @Parameter(description = "판매 type. 0:월세 , 1:전세 , 2:매매 ") @RequestParam(name = "sellingType",required = false) Integer sellingType,
-                                      @Parameter(description = "방 type. 0:원룸, 1: 투룸, 2: 쓰리룸이상, 3:오피스텔,4:빌라,5:아파트 \"") @RequestParam(name = "roomType",required = false) Long roomType,
+                                      @Parameter(description = "방 type. 0:원룸~쓰리룸 1: 오피스텔 ,2:아파트 ") @RequestParam(name = "roomType",required = false) Long roomType,
                                       @Parameter(description = "경도1 : ex) 127.052258761841") @RequestParam(name = "x1") Double x1,
                                       @Parameter(description = "경도2 : ex) 127.072258761841")@RequestParam(name="x2") Double x2,
                                       @Parameter(description = "위도1 : ex) 37.2549398021063") @RequestParam(name="y1") Double y1,
@@ -43,7 +43,7 @@ public class RoomController {
     )
     @GetMapping("/effective")
     public List<RoomDTO>  getGoodRooms(@Parameter(description = "판매 type. 0:월세 , 1:전세 , 2:매매 ") @RequestParam(name = "sellingType",required = false) Integer sellingType,
-                                       @Parameter(description = "방 type. 0:원룸, 1: 투룸, 2: 쓰리룸이상, 3:오피스텔,4:빌라,5:아파트 ") @RequestParam(name = "roomType",required = false) Long roomType,
+                                       @Parameter(description = "방 type. 0:원룸~쓰리룸 1: 오피스텔 ,2:아파트 ") @RequestParam(name = "roomType",required = false) Long roomType,
                                        @Parameter(description = "경도1 : ex) 127.052258761841") @RequestParam(name = "x1") Double x1,
                                        @Parameter(description = "경도2 : ex) 127.072258761841")@RequestParam(name="x2") Double x2,
                                        @Parameter(description = "위도1 : ex) 37.2549398021063") @RequestParam(name="y1") Double y1,
