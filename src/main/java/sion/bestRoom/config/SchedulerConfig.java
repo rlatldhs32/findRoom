@@ -47,7 +47,7 @@ public class SchedulerConfig {
                 triggerContext -> {
                     CronTask cronTask = new CronTask(
                             () -> System.out.println("Executing Cron Task at " + new Date()),
-                            "0 0 0 * * *"); //매 00시마다 리셋
+                            "0 0 18 * * *"); //매 18시마다 리셋 -> 이러면 18시 0분 0초에 실행-> 실제로는 오전 3시.
                     return cronTask.getTrigger().nextExecution(triggerContext);
                 });
         return registrar;

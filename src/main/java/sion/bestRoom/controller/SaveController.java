@@ -29,6 +29,7 @@ public class SaveController {
     private final CityService cityService;
 
     @Operation(summary = "직방+다방 방 정보 저장하기. 처음에 수행하면 됨.")
+    @Transactional
     @GetMapping("/all/rooms")
     public List<String> getZigAndDabangRooms() throws InterruptedException, JsonProcessingException {
         if(Constants.checkRoomList)
