@@ -11,6 +11,7 @@ import sion.bestRoom.dto.CreateSubwayDTO;
 import sion.bestRoom.model.City;
 import sion.bestRoom.service.*;
 import sion.bestRoom.util.Constants;
+import sion.bestRoom.util.CustomException;
 
 import java.util.List;
 
@@ -31,16 +32,16 @@ public class SaveController {
     @Operation(summary = "직방+다방 방 정보 저장하기. 처음에 수행하면 됨.")
     @Transactional
     @GetMapping("/all/rooms")
-    public List<String> getZigAndDabangRooms() throws InterruptedException, JsonProcessingException {
+    public List<String> getZigAndDabangRooms() throws InterruptedException, JsonProcessingException, CustomException {
         if(Constants.checkRoomList)
             throw new RuntimeException("이미 방 정보를 가져왔습니다.");
         Constants.checkRoomList = true;
         roomService.deleteAllRooms();
         cityService.deleteAllCities();
         List<City> areaCode = roomService.getGeongGiAndSeoulAreaCode();
-//        List<String> allRoomsInCity = roomService.getDabangRoomsInCity();
         List<String> allRoomsInCity = roomService.getAllDabangRoomsInCity();
         String zigbangRooms = zigbangService.getZigbangRooms();
+
         return allRoomsInCity;
     }
 

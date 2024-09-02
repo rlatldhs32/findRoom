@@ -8,9 +8,11 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.QueryException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTWriter;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import sion.bestRoom.dto.DabangRoomDTO;
@@ -25,6 +27,7 @@ import sion.bestRoom.repository.CityRepository;
 import sion.bestRoom.repository.OneRoomRepository;
 import sion.bestRoom.util.CalculateUtil;
 import sion.bestRoom.util.Constants;
+import sion.bestRoom.util.CustomException;
 import sion.bestRoom.util.RoomConverter;
 
 import java.net.URLEncoder;
@@ -484,14 +487,15 @@ public class RoomService {
         return result;
     }
 
-    @Transactional(dontRollbackOn = Exception.class)
-    public List<String> getAllDabangRoomsInCity() throws InterruptedException, JsonProcessingException {
+//    @Transactional(dontRollbackOn = CustomException.class)
+    @org.springframework.transaction.annotation.Transactional(noRollbackFor = CustomException.class)
+    public List<String> getAllDabangRoomsInCity() throws InterruptedException, JsonProcessingException, CustomException {
         List<String> allResults = new ArrayList<>();
-        for (RoomType roomType : RoomType.values()) {
-            log.info("\n\nroomType !!! : {}\n\n", roomType.getDescription());
-            List<String> result = getDabangRoomsInCityV3(roomType);
-            allResults.addAll(result);
-        }
+//        for (RoomType roomType : RoomType.values()) {
+//            log.info("\n\nroomType !!! : {}\n\n", roomType.getDescription());
+//            List<String> result = getDabangRoomsInCityV3(roomType);
+//            allResults.addAll(result);
+//        }
         getApartInfo();
         return allResults;
     }
@@ -533,8 +537,16 @@ public class RoomService {
                         List<OneRoom> roomList = convertDabangDtoToOneRoomV5(rooms, fullCode);
                         batchList.addAll(roomList);
                         if(batchList.size() >= batchSize) {
-                            oneRoomRepository.saveAll(batchList);
-                            batchList.clear();
+                            try {
+//                            oneRoomRepository.saveAll(batchList);
+                                oneRoomRepository.saveAllIgnore(batchList);
+                                batchList.clear();
+                            }
+                            catch (Exception e)
+                            {
+                                log.error("sql error : {}", e.getMessage());
+                                log.error("ERROR happen!");
+                            }
                         }
                         roomCnt += rooms.size();
                         Boolean hasMore = dabangResponse.getResult().getHasMore();
@@ -557,7 +569,8 @@ public class RoomService {
         }
         try {
             if (!batchList.isEmpty()) {
-                oneRoomRepository.saveAll(batchList);
+//                oneRoomRepository.saveAll(batchList);
+                oneRoomRepository.saveAllIgnore(batchList);
             }
         }
         catch (Exception e) {
@@ -571,20 +584,114 @@ public class RoomService {
         return result;
     }
 
+
     @Transactional(dontRollbackOn = Exception.class)
-    public void getApartInfo() throws JsonProcessingException {
+    public void getApartInfoV2() throws JsonProcessingException, InterruptedException {
+
+        // 경도 37 ~ 37.7 , 위도 126 ~ 128 을 각각 20분의1씩 나눠서 넣음
+
+        List<OneRoom> batchList = new ArrayList<>();
+            String bbox = createBboxParam(37, 126, 38, 128);
+            String filters = createFiltersParam();
+            String useMap = "naver";
+            int zoom = 13;
+            Long page = 1L;
+            try {
+                log.info("page : {}", page);
+                DabangV5Response<DabangV5Result> aparts = dabangFeignClient.getApartmentRoomInCityV6(
+                        "web",
+                        "5.0.0",
+                        bbox,
+                        filters,
+                        useMap,
+                        zoom,
+                        page
+                );
+                log.info("dabangResponse : {}", aparts.getResult().getRoomList().size());
+                List<DabangRoomV5> rooms = aparts.getResult().getRoomList();
+                List<OneRoom> roomList = convertDabangDtoToOneRoomV5(rooms, null);
+                batchList.addAll(roomList);
+                oneRoomRepository.saveAllIgnore(batchList);
+                //고의로 에러 발생
+                throw new RuntimeException("고의로 에러 발생");
+
+            } catch (FeignException e) {
+                log.error("!! Feign error : {}", e.getMessage());
+                log.error("api info : {}", "apartment");
+                log.error("Feign Error happen!");
+            } catch (Exception e) {
+//                        log.error("!! error : {}", e.getMessage());
+                log.error("Error api info : {}", "apartment");
+                log.error(e.getMessage());
+                batchList.clear(); // clear추가
+                log.error("Error happen!");
+            }
+
+        try{
+            if(!batchList.isEmpty())
+                oneRoomRepository.saveAllIgnore(batchList);
+        }
+        catch (Exception e)
+        {
+            log.error("sql error : {}", e.getMessage());
+            log.error("sql error : {}", e.getMessage());
+        }
+
+        page++;
+
+        try {
+            log.info("page : {}", page);
+            DabangV5Response<DabangV5Result> aparts = dabangFeignClient.getApartmentRoomInCityV6(
+                    "web",
+                    "5.0.0",
+                    bbox,
+                    filters,
+                    useMap,
+                    zoom,
+                    page
+            );
+            log.info("dabangResponse : {}", aparts.getResult().getRoomList().size());
+            List<DabangRoomV5> rooms = aparts.getResult().getRoomList();
+            List<OneRoom> roomList = convertDabangDtoToOneRoomV5(rooms, null);
+            batchList.addAll(roomList);
+            oneRoomRepository.saveAllIgnore(batchList);
+            //고의로 에러 발생
+
+        }
+         catch (Exception e) {
+//                        log.error("!! error : {}", e.getMessage());
+            log.error("Error api info : {}", "apartment");
+            log.error(e.getMessage());
+            batchList.clear(); // clear추가
+            log.error("Error happen!");
+        }
+
+
+
+
+    }
+
+//    @Transactional(dontRollbackOn = CustomException.class)
+    @org.springframework.transaction.annotation.Transactional(noRollbackFor = CustomException.class)
+
+    public void getApartInfo() throws JsonProcessingException, CustomException {
 
         // 경도 37 ~ 37.7 , 위도 126 ~ 128 을 각각 20분의1씩 나눠서 넣음
 
         List<OneRoom> batchList = new ArrayList<>();
 
         Integer batchSize= 1000;
-        double x1 = 37.0;
-        double y1 = 126.0;
-        for(int i=0;i<20;i++){
+//        double x1 = 37.0;
+//        double y1 = 126.0;
+        double x1 = 37.5;
+        double y1 = 126.8;
+        int cnt = 0;
+//        for(int i=0;i<3;i++){
+            for(int i=0;i<2;i++){
             double swLat = x1 + i * 0.035;
             double neLat = x1 + (i+1) * 0.035;
-            for(int j=0;j<20;j++){
+//            for(int j=0;j<3;j++){
+            for(int j=0;j<2;j++){
                 double swLng = y1 + j * 0.05;
                 double neLng = y1 + (j+1) * 0.05;
                 log.info("swLat : {}, swLng : {}, neLat : {}, neLng : {}", swLat, swLng, neLat, neLng);
@@ -618,19 +725,25 @@ public class RoomService {
                         List<DabangRoomV5> rooms = aparts.getResult().getRoomList();
                         List<OneRoom> roomList = convertDabangDtoToOneRoomV5(rooms, null);
                         batchList.addAll(roomList);
-                        if(batchList.size() >= batchSize) {
-                            oneRoomRepository.saveAll(batchList);
+//                        if(batchList.size() >= batchSize) {
+                            oneRoomRepository.saveAllIgnore(batchList);
                             batchList.clear();
-                        }
+//                                                }
                     }
                     catch (FeignException e) {
                         log.error("!! Feign error : {}", e.getMessage());
                         log.error("api info : {}", "apartment");
+                        log.error("Feign Error happen!");
                         fienErrorCnt++;
                     }
-                    catch (Exception e) {
-                        log.error("!! error : {}", e.getMessage());
-                        log.error("api info : {}", "apartment");
+                    catch (CustomException e) {
+//                        throw new CustomException("예외 던지기");
+//                        log.error("!! error : {}", e.getMessage());
+                        log.error("Error api info : {}", "apartment");
+                        log.error(e.getMessage());
+                        batchList.clear(); // clear추가
+                        log.error("Error happen after!!");
+//                        throw new CustomException("예외 던지기");
                     }
                     page++;
                 }
@@ -638,14 +751,15 @@ public class RoomService {
         }
         try{
             if(!batchList.isEmpty())
-                oneRoomRepository.saveAll(batchList);
+                oneRoomRepository.saveAllIgnore(batchList);
         }
         catch (Exception e)
         {
             log.error("sql error : {}", e.getMessage());
+            log.error("sql error : {}", e.getMessage());
         }
         finally {
-            log.info("em.clear()");
+            em.flush();
             em.clear();
         }
     }

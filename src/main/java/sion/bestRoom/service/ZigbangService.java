@@ -39,6 +39,11 @@ public class ZigbangService {
         for (ZigbangItemDTO item : items)
             itemIds.add(item.getItemId());
 
+        //itemIds 2500개까지 짜르기
+        if (itemIds.size() > 200) {
+            itemIds = itemIds.subList(0, 200);
+        }
+
         //itemId 1000개씩 짤라서 saveZigbangVilla 호출
         for (int i = 0; i < itemIds.size(); i += 1000) {
             List<Long> subList = itemIds.subList(i, Math.min(i + 1000, itemIds.size()));
@@ -51,6 +56,7 @@ public class ZigbangService {
     }
 
     private void saveZigbangVilla(ReqZigbangRoomInfoDTO reqZigbangRoomInfoDTO) {
+        log.info("saveZigbangVilla called!!");
         ResZigbangListDTO roomInfo = zigbangFeignClient.getRoomInfo(reqZigbangRoomInfoDTO);
 
         List<OneRoom> oneRooms = new ArrayList<>();

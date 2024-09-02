@@ -16,6 +16,7 @@ import sion.bestRoom.model.City;
 import sion.bestRoom.service.CityService;
 import sion.bestRoom.service.RoomService;
 import sion.bestRoom.service.ZigbangService;
+import sion.bestRoom.util.CustomException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -65,6 +66,8 @@ public class SchedulerConfig {
             try {
                 roomService.getAllDabangRoomsInCity();
             } catch (InterruptedException | JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (CustomException e) {
                 throw new RuntimeException(e);
             }
         };
