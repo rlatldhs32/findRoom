@@ -19,6 +19,8 @@ public class RoomFrontController {
 
     private final RoomService roomService;
 
+    //test
+
     @GetMapping("/good/effective")
     public String  getEffectiveRooms(Model model) { //sungName 우선
         List<RoomDTO> dabangRooms = roomService.getTop10CostEffectivenessRooms();
